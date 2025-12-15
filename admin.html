@@ -1,0 +1,1166 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>应用配置管理 - HomeDock</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #1c1c1c;
+            min-height: 100vh;
+            padding: 24px;
+            color: #e4e4e4;
+        }
+
+        .container {
+            max-width: 1100px;
+            margin: 0 auto;
+            background: #2b2b2b;
+            border-radius: 18px;
+            box-shadow: 0 24px 60px rgba(0,0,0,0.55);
+            overflow: hidden;
+            border: 1px solid #444444;
+        }
+
+        .header {
+            background: #262626;
+            color: #f0f0f0;
+            padding: 22px 28px;
+            text-align: left;
+            border-bottom: 1px solid #3a3a3a;
+        }
+
+        .header h1 {
+            font-size: 22px;
+            margin-bottom: 6px;
+        }
+
+        .header p {
+            opacity: 0.8;
+            font-size: 13px;
+        }
+
+        .content {
+            padding: 24px 28px 28px;
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .app-section {
+            margin-bottom: 40px;
+        }
+
+        .section-title {
+            font-size: 18px;
+            color: #f0f0f0;
+            margin-bottom: 16px;
+            padding-bottom: 8px;
+            border-bottom: 1px solid #3a3a3a;
+        }
+
+        .add-app-btn {
+            background-image: linear-gradient(135deg, #1f4fad 0%, #1163d8 100%);
+            color: #ffffff;
+            border: none;
+            padding: 9px 18px;
+            border-radius: 999px;
+            cursor: pointer;
+            font-size: 13px;
+            font-weight: 500;
+            margin-bottom: 18px;
+        }
+
+        .add-app-btn:hover {
+            background-image: linear-gradient(135deg, #3b96f0 0%, #03d9e5 100%);
+        }
+
+        .app-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 20px;
+        }
+
+        .app-item {
+            background: #323232;
+            border: 1px solid #3f3f3f;
+            border-radius: 12px;
+            padding: 18px;
+            transition: border-color 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease;
+        }
+
+        .app-item:hover {
+            border-color: #4facfe;
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.4);
+        }
+
+        .app-info {
+            display: flex;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .app-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 8px;
+            margin-right: 15px;
+            object-fit: cover;
+        }
+
+        .app-details h4 {
+            color: #f2f2f2;
+            margin-bottom: 4px;
+            font-size: 15px;
+        }
+
+        .app-url {
+            color: #b0b0b0;
+            font-size: 12px;
+            word-break: break-all;
+        }
+
+        .app-actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        .edit-btn, .delete-btn {
+            flex: 1;
+            padding: 7px 14px;
+            border: none;
+            border-radius: 999px;
+            cursor: pointer;
+            font-weight: 500;
+            font-size: 12px;
+            transition: background-color 0.2s ease, opacity 0.2s ease;
+        }
+
+        .edit-btn {
+            background: #3b8cff;
+            color: #f5f5f5;
+        }
+
+        .edit-btn:hover {
+            background: #2f79dd;
+        }
+
+        .delete-btn {
+            background: #e15361;
+            color: #fefefe;
+        }
+
+        .delete-btn:hover {
+            background: #c64452;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+        }
+
+        .modal-content {
+            background: #2b2b2b;
+            margin: 5% auto;
+            padding: 30px;
+            border-radius: 16px;
+            width: 90%;
+            max-width: 500px;
+            position: relative;
+            color: #e4e4e4;
+            border: 1px solid #444444;
+            box-shadow: 0 24px 60px rgba(0,0,0,0.55);
+        }
+
+        .close {
+            position: absolute;
+            right: 20px;
+            top: 20px;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+            color: #aaa;
+        }
+
+        .close:hover {
+            color: #000;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 6px;
+            font-weight: 400;
+            color: #cfcfcf;
+            font-size: 13px;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 10px 14px;
+            border: 1px solid #555555;
+            border-radius: 8px;
+            font-size: 13px;
+            background-color: #1f1f1f;
+            color: #f0f0f0;
+            transition: border-color 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .form-group input:focus {
+            outline: none;
+            border-color: #00c4ff;
+            box-shadow: 0 0 0 1px rgba(0,196,255,0.6);
+        }
+
+        .save-btn {
+            background-image: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            color: #f5f5f5;
+            border: none;
+            padding: 10px 26px;
+            border-radius: 999px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+            width: 100%;
+            margin-top: 6px;
+        }
+
+        .save-btn:hover {
+            background-image: linear-gradient(135deg, #3b96f0 0%, #03d9e5 100%);
+        }
+
+        .back-btn {
+            background: transparent;
+            color: #e4e4e4;
+            border: 1px solid rgba(255,255,255,0.2);
+            padding: 8px 16px;
+            border-radius: 999px;
+            cursor: pointer;
+            font-size: 13px;
+            margin-bottom: 18px;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .back-btn:hover {
+            background: rgba(255,255,255,0.08);
+        }
+
+        .status {
+            padding: 8px 10px;
+            border-radius: 6px;
+            margin-bottom: 18px;
+            display: none;
+            font-size: 12px;
+        }
+
+        .status.success {
+            background: rgba(40, 167, 69, 0.12);
+            color: #c2f0cf;
+            border: 1px solid rgba(40, 167, 69, 0.4);
+        }
+
+        .status.error {
+            background: rgba(220, 53, 69, 0.12);
+            color: #f5c6cb;
+            border: 1px solid rgba(220, 53, 69, 0.4);
+        }
+
+        .bulk-section {
+            margin-top: 10px;
+        }
+
+        .bulk-section-desc {
+            color: #b0b0b0;
+            font-size: 0.9em;
+            margin-bottom: 12px;
+        }
+
+        .bulk-controls {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-bottom: 12px;
+        }
+
+        .bulk-btn {
+            border: 1px solid rgba(255,255,255,0.2);
+            border-radius: 999px;
+            padding: 6px 14px;
+            cursor: pointer;
+            font-size: 0.85em;
+            font-weight: 500;
+            background: transparent;
+            color: #dddddd;
+        }
+
+        .bulk-btn.primary {
+            border: none;
+            background-image: linear-gradient(135deg, #1f4fad 0%, #1163d8 100%);
+            color: #ffffff;
+        }
+
+        .bulk-btn.import {
+            border: none;
+            background-image: linear-gradient(135deg, #1e874b 0%, #199154 100%);
+            color: #ffffff;
+        }
+
+        .bulk-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.9em;
+        }
+
+        .bulk-table th,
+        .bulk-table td {
+            border: 1px solid #e9ecef;
+            padding: 8px;
+            text-align: left;
+        }
+
+        .bulk-table th {
+            background: #343a40;
+            color: #e4e4e4;
+        }
+
+        .bulk-table input {
+            width: 100%;
+            border: 1px solid #dee2e6;
+            border-radius: 4px;
+            padding: 6px 8px;
+            font-size: 0.9em;
+        }
+
+        .delete-row-btn {
+            border: none;
+            background: #dc3545;
+            color: #fff;
+            border-radius: 4px;
+            padding: 4px 8px;
+            cursor: pointer;
+            font-size: 0.8em;
+        }
+
+        .icon-picker-toggle {
+            border: 1px solid rgba(255,255,255,0.25);
+            border-radius: 999px;
+            padding: 6px 12px;
+            background: transparent;
+            color: #dddddd;
+            font-size: 12px;
+            cursor: pointer;
+            margin-top: 8px;
+        }
+
+        .icon-picker-toggle:hover {
+            background: rgba(255,255,255,0.06);
+        }
+
+        .icon-picker {
+            margin-top: 10px;
+            max-height: 220px;
+            overflow-y: auto;
+            border-radius: 10px;
+            border: 1px solid #3a3a3a;
+            padding: 10px;
+            background: #222222;
+            display: none;
+        }
+
+        .icon-picker-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(72px, 1fr));
+            gap: 10px;
+        }
+
+        .icon-picker-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 4px;
+            padding: 6px 4px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .icon-picker-item img {
+            width: 32px;
+            height: 32px;
+            border-radius: 6px;
+        }
+
+        .icon-picker-item span {
+            font-size: 11px;
+            color: #d0d0d0;
+            text-align: center;
+        }
+
+        .icon-picker-item:hover {
+            background: #303030;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.4);
+        }
+
+        .form-hint {
+            margin-top: 6px;
+            font-size: 12px;
+            color: #9a9a9a;
+        }
+
+        .bg-section {
+            margin-top: 26px;
+        }
+
+        .bg-mode-group {
+            display: inline-flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            font-size: 13px;
+            color: #d0d0d0;
+        }
+
+        .bg-mode-option {
+            position: relative;
+        }
+
+        .bg-mode-option input {
+            position: absolute;
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        .bg-mode-option span {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 6px 14px;
+            border-radius: 999px;
+            border: 1px solid #3f3f3f;
+            background: #252525;
+            color: #d0d0d0;
+            cursor: pointer;
+            transition: background 0.18s ease, border-color 0.18s ease, color 0.18s ease, box-shadow 0.18s ease, transform 0.18s ease;
+            min-width: 96px;
+        }
+
+        .bg-mode-option input:checked + span {
+            background-image: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            border-color: transparent;
+            color: #0b1220;
+            box-shadow: 0 8px 18px rgba(15, 118, 255, 0.45);
+            transform: translateY(-1px);
+        }
+
+        .bg-color-row {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+
+        .bg-color-row input[type="color"] {
+            width: 34px;
+            height: 28px;
+            padding: 0;
+            border-radius: 6px;
+            border: 1px solid #555555;
+            background: #1f1f1f;
+        }
+
+        .bg-color-row input[type="text"] {
+            width: 120px;
+        }
+
+        .bg-gradient-inputs {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px 26px;
+            margin-bottom: 12px;
+        }
+
+        .bg-gradient-inputs .bg-color-row {
+            margin-bottom: 0;
+        }
+
+        .bg-color-row span {
+            font-size: 12px;
+            color: #a0a0a0;
+            width: 30px;
+        }
+
+        .bg-preview {
+            width: 100%;
+            height: 52px;
+            border-radius: 12px;
+            border: 1px solid #444444;
+            box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.35);
+        }
+
+        @media (max-width: 768px) {
+            .app-list {
+                grid-template-columns: 1fr;
+            }
+            
+            .nav-tabs {
+                flex-direction: column;
+            }
+            
+            .header h1 {
+                font-size: 2em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>应用配置管理</h1>
+            <p>管理您的外部网络和内部网络应用</p>
+        </div>
+
+        <div class="content">
+            <a href="index.html" class="back-btn">← 返回主页</a>
+            
+            <div id="status" class="status"></div>
+
+            <div id="external-content" class="tab-content active">
+                <div class="app-section">
+                    <h2 class="section-title">应用列表</h2>
+                    <button class="add-app-btn" onclick="openAddModal()">+ 添加应用</button>
+                    <div id="app-list" class="app-list"></div>
+                </div>
+                <div class="app-section bulk-section">
+                    <h2 class="section-title">表格批量导入</h2>
+                    <p class="bulk-section-desc">在表格中手工填写或粘贴应用信息，点击右侧绿色按钮可以把表格内容应用到下面的应用列表。</p>
+                    <div class="bulk-controls">
+                        <button type="button" class="bulk-btn primary" onclick="addBulkRow()">新增一行</button>
+                        <button type="button" class="bulk-btn" onclick="clearBulkTable()">清空表格</button>
+                        <button type="button" class="bulk-btn import" onclick="importFromTable()">保存到应用列表</button>
+                    </div>
+                    <table class="bulk-table">
+                        <thead>
+                            <tr>
+                                <th>应用名称</th>
+                                <th>外部网络地址</th>
+                                <th>内部网络地址</th>
+                                <th>图标路径</th>
+                                <th>操作</th>
+                            </tr>
+                        </thead>
+                        <tbody id="bulk-table-body"></tbody>
+                    </table>
+                    <p class="bulk-section-desc">提示：表格里每一行都会在点击「保存到应用列表」时写入配置（按照「应用名称」相同进行更新，不存在则新增）。本页面的添加、编辑、删除等操作都会自动保存到当前浏览器的配置中，无需单独的“保存”按钮。</p>
+                </div>
+
+                <div class="app-section bg-section">
+                    <h2 class="section-title">背景设置</h2>
+                    <div class="form-group">
+                        <label>背景模式:</label>
+                        <div class="bg-mode-group">
+                            <label class="bg-mode-option">
+                                <input type="radio" name="bgMode" value="wallpaper" id="bgModeWallpaper">
+                                <span>必应每日壁纸</span>
+                            </label>
+                            <label class="bg-mode-option">
+                                <input type="radio" name="bgMode" value="solid" id="bgModeSolid">
+                                <span>纯色背景</span>
+                            </label>
+                            <label class="bg-mode-option">
+                                <input type="radio" name="bgMode" value="gradient" id="bgModeGradient">
+                                <span>渐变背景</span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="form-group" id="bg-solid-settings">
+                        <label for="bgSolidColor">纯色背景颜色:</label>
+                        <div class="bg-color-row">
+                            <input type="color" id="bgSolidColor">
+                            <input type="text" id="bgSolidColorText" placeholder="#202124">
+                        </div>
+                        <div class="form-hint">支持十六进制颜色，例如 #202124。</div>
+                    </div>
+
+                    <div class="form-group" id="bg-gradient-settings">
+                        <label>渐变颜色:</label>
+                        <div class="bg-gradient-inputs">
+                            <div class="bg-color-row">
+                                <span>起始</span>
+                                <input type="color" id="bgGradientFrom">
+                                <input type="text" id="bgGradientFromText" placeholder="#141e30">
+                            </div>
+                            <div class="bg-color-row">
+                                <span>结束</span>
+                                <input type="color" id="bgGradientTo">
+                                <input type="text" id="bgGradientToText" placeholder="#243b55">
+                            </div>
+                        </div>
+                        <div class="bg-preview" id="bgPreview"></div>
+                        <div class="form-hint">渐变方向固定为 135°，首页会按这里的颜色渲染背景。</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 添加/编辑应用模态框 -->
+    <div id="appModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal()">&times;</span>
+            <h2 id="modalTitle">添加应用</h2>
+            <form id="appForm">
+                <div class="form-group">
+                    <label for="appName">应用名称:</label>
+                    <input type="text" id="appName" required>
+                </div>
+                <div class="form-group">
+                    <label for="appExternalUrl">外部网络地址:</label>
+                    <input type="url" id="appExternalUrl" placeholder="https://example.com">
+                </div>
+                <div class="form-group">
+                    <label for="appInternalUrl">内部网络地址:</label>
+                    <input type="url" id="appInternalUrl" placeholder="http://192.168.1.100:8080">
+                </div>
+                <div class="form-group">
+                    <label for="appIcon">图标路径:</label>
+                    <input type="text" id="appIcon" placeholder="img/png/Edge.svg">
+                    <button type="button" class="icon-picker-toggle" onclick="toggleIconPicker()">浏览预设图标</button>
+                    <div id="iconPicker" class="icon-picker">
+                        <div class="icon-picker-grid" id="iconPickerGrid"></div>
+                    </div>
+                    <div class="form-hint">留空将使用默认图标。预设图标位于 img/png 目录。</div>
+                </div>
+                <button type="submit" class="save-btn">保存</button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        let config = null;
+        let currentEditingIndex = null;
+
+        const PRESET_ICONS = [
+            { path: 'img/png/Edge.svg', name: 'Edge' },
+            { path: 'img/png/Firefox.svg', name: 'Firefox' },
+            { path: 'img/png/Adminer.svg', name: 'Adminer' },
+            { path: 'img/png/Ai.svg', name: 'Ai' },
+            { path: 'img/png/Alist.svg', name: 'Alist' },
+            { path: 'img/png/Aria2.svg', name: 'Aria2' },
+            { path: 'img/png/Book.svg', name: 'Book' },
+            { path: 'img/png/Calibre.png', name: 'Calibre' },
+            { path: 'img/png/Chatgpt.png', name: 'ChatGPT' },
+            { path: 'img/png/Cloud.svg', name: 'Cloud' },
+            { path: 'img/png/Downloads.png', name: 'Downloads' },
+            { path: 'img/png/Emby.svg', name: 'Emby' },
+            { path: 'img/png/FaceTime.png', name: 'FaceTime' },
+            { path: 'img/png/File.svg', name: 'File' },
+            { path: 'img/png/FileBrowser.svg', name: 'FileBrowser' },
+            { path: 'img/png/FileSync.svg', name: 'FileSync' },
+            { path: 'img/png/HPE.svg', name: 'HPE' },
+            { path: 'img/png/Homarr.png', name: 'Homarr' },
+            { path: 'img/png/Jellyfin.svg', name: 'Jellyfin' },
+            { path: 'img/png/KMS.svg', name: 'KMS' },
+            { path: 'img/png/Lucky.svg', name: 'Lucky' },
+            { path: 'img/png/MariaDB.svg', name: 'MariaDB' },
+            { path: 'img/png/MovieTool.svg', name: 'MovieTool' },
+            { path: 'img/png/Music.svg', name: 'Music' },
+            { path: 'img/png/MyAdmin.svg', name: 'MyAdmin' },
+            { path: 'img/png/NasTool.svg', name: 'NasTool' },
+            { path: 'img/png/Openwrt.svg', name: 'OpenWrt' },
+            { path: 'img/png/PVE.svg', name: 'PVE' },
+            { path: 'img/png/Photos.svg', name: 'Photos' },
+            { path: 'img/png/Podcats.png', name: 'Podcasts' },
+            { path: 'img/png/Portainer.svg', name: 'Portainer' },
+            { path: 'img/png/Print.svg', name: 'Print' },
+            { path: 'img/png/Qb.svg', name: 'Qbittorrent' },
+            { path: 'img/png/QingLong.svg', name: 'QingLong' },
+            { path: 'img/png/S-PDF.svg', name: 'S-PDF' },
+            { path: 'img/png/Sam.svg', name: 'Sam' },
+            { path: 'img/png/Server.svg', name: 'Server' },
+            { path: 'img/png/Settings.png', name: 'Settings' },
+            { path: 'img/png/Thunder.png', name: 'Thunder' },
+            { path: 'img/png/Transmission.png', name: 'Transmission' },
+            { path: 'img/png/Unraid.svg', name: 'Unraid' },
+            { path: 'img/png/VM.svg', name: 'VM' },
+            { path: 'img/png/Videos.svg', name: 'Videos' },
+            { path: 'img/png/XunLei.svg', name: 'XunLei' },
+            { path: 'img/png/iCloud-Drive.png', name: 'iCloud Drive' },
+            { path: 'img/png/nginxWebUI.png', name: 'nginxWebUI' },
+            { path: 'img/png/favicon.svg', name: 'Favicon' },
+            { path: 'img/png/favicon2.svg', name: 'Favicon2' },
+            { path: 'img/png/logo.svg', name: 'Logo' },
+            { path: 'img/png/猫logo2.svg', name: '猫Logo' }
+        ];
+
+        const CONFIG_KEY = 'homedock-config';
+
+        async function loadConfig() {
+            try {
+                const remote = await loadConfigFromServer();
+                if (remote) {
+                    config = remote;
+                    localStorage.setItem(CONFIG_KEY, JSON.stringify(config));
+                } else {
+                    const localConfig = JSON.parse(localStorage.getItem(CONFIG_KEY)) || null;
+                    if (localConfig && localConfig.applications && Array.isArray(localConfig.applications)) {
+                        config = localConfig;
+                    } else {
+                        const response = await fetch('apps-config.json');
+                        config = await response.json();
+                    }
+                    ensureBackgroundConfig();
+                    localStorage.setItem(CONFIG_KEY, JSON.stringify(config));
+                    saveConfigToServer(config).catch(() => {});
+                }
+                ensureBackgroundConfig();
+                renderApps();
+                initBackgroundForm();
+            } catch (error) {
+                showStatus('加载配置失败: ' + error.message, 'error');
+            }
+        }
+
+        // 渲染应用列表
+        function renderApps() {
+            const container = document.getElementById('app-list');
+            const apps = config.applications;
+            
+            container.innerHTML = '';
+            apps.forEach((app, index) => {
+                const appItem = createAppItem(app, index);
+                container.appendChild(appItem);
+            });
+        }
+
+        function createAppItem(app, index) {
+            const div = document.createElement('div');
+            div.className = 'app-item';
+            const iconSrc = app.icon && app.icon.trim() ? app.icon : 'img/png/favicon.svg';
+            div.innerHTML = `
+                <div class="app-info">
+                    <img src="${iconSrc}" alt="${app.name}" class="app-icon" onerror="this.onerror=null;this.src='img/png/favicon.svg'">
+                    <div class="app-details">
+                        <h4>${app.name}</h4>
+                        <div class="app-url">外部: ${app.external_url}</div>
+                        <div class="app-url">内部: ${app.internal_url}</div>
+                    </div>
+                </div>
+                <div class="app-actions">
+                    <button class="edit-btn" onclick="editApp(${index})">编辑</button>
+                    <button class="delete-btn" onclick="deleteApp(${index})">删除</button>
+                </div>
+            `;
+            return div;
+        }
+
+        async function loadConfigFromServer() {
+            try {
+                const resp = await fetch('/api/config', {
+                    method: 'GET',
+                    headers: {
+                        'Accept': 'application/json'
+                    }
+                });
+                if (!resp.ok) {
+                    return null;
+                }
+                const data = await resp.json();
+                if (!data || !data.applications || !Array.isArray(data.applications)) {
+                    return null;
+                }
+                return data;
+            } catch (e) {
+                return null;
+            }
+        }
+
+        async function saveConfigToServer(current) {
+            try {
+                await fetch('/api/config', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(current)
+                });
+            } catch (e) {
+            }
+        }
+
+        function initIconPicker() {
+            const grid = document.getElementById('iconPickerGrid');
+            if (!grid) return;
+            grid.innerHTML = '';
+            PRESET_ICONS.forEach(icon => {
+                const item = document.createElement('div');
+                item.className = 'icon-picker-item';
+                item.innerHTML = `
+                    <img src="${icon.path}" alt="${icon.name}">
+                    <span>${icon.name}</span>
+                `;
+                item.onclick = function() {
+                    const input = document.getElementById('appIcon');
+                    if (input) {
+                        input.value = icon.path;
+                        input.focus();
+                    }
+                    const picker = document.getElementById('iconPicker');
+                    if (picker) {
+                        picker.style.display = 'none';
+                    }
+                };
+                grid.appendChild(item);
+            });
+        }
+
+        function toggleIconPicker() {
+            const picker = document.getElementById('iconPicker');
+            if (!picker) return;
+            if (picker.style.display === 'none' || picker.style.display === '') {
+                initIconPicker();
+                picker.style.display = 'block';
+            } else {
+                picker.style.display = 'none';
+            }
+        }
+
+        function ensureBackgroundConfig() {
+            if (!config.background) {
+                config.background = {};
+            }
+            if (!config.background.mode) {
+                config.background.mode = 'wallpaper';
+            }
+            if (!config.background.solidColor) {
+                config.background.solidColor = '#202124';
+            }
+            if (!config.background.gradientFrom) {
+                config.background.gradientFrom = '#141e30';
+            }
+            if (!config.background.gradientTo) {
+                config.background.gradientTo = '#243b55';
+            }
+        }
+
+        function initBackgroundForm() {
+            const bg = config.background;
+            const modeInputs = document.querySelectorAll('input[name="bgMode"]');
+            modeInputs.forEach(input => {
+                input.checked = input.value === bg.mode;
+            });
+            const solidColorInput = document.getElementById('bgSolidColor');
+            const solidColorText = document.getElementById('bgSolidColorText');
+            const gradientFromInput = document.getElementById('bgGradientFrom');
+            const gradientFromText = document.getElementById('bgGradientFromText');
+            const gradientToInput = document.getElementById('bgGradientTo');
+            const gradientToText = document.getElementById('bgGradientToText');
+            if (solidColorInput) solidColorInput.value = bg.solidColor;
+            if (solidColorText) solidColorText.value = bg.solidColor;
+            if (gradientFromInput) gradientFromInput.value = bg.gradientFrom;
+            if (gradientFromText) gradientFromText.value = bg.gradientFrom;
+            if (gradientToInput) gradientToInput.value = bg.gradientTo;
+            if (gradientToText) gradientToText.value = bg.gradientTo;
+            updateBackgroundVisibility();
+            updateBackgroundPreview();
+        }
+
+        function updateBackgroundVisibility() {
+            const mode = config.background.mode;
+            const solidSettings = document.getElementById('bg-solid-settings');
+            const gradientSettings = document.getElementById('bg-gradient-settings');
+            if (solidSettings) {
+                solidSettings.style.display = mode === 'solid' ? 'block' : 'none';
+            }
+            if (gradientSettings) {
+                gradientSettings.style.display = mode === 'gradient' ? 'block' : 'none';
+            }
+        }
+
+        function updateBackgroundPreview() {
+            const preview = document.getElementById('bgPreview');
+            if (!preview || !config.background) return;
+            const bg = config.background;
+            if (bg.mode === 'solid') {
+                preview.style.background = bg.solidColor;
+            } else if (bg.mode === 'gradient') {
+                preview.style.background = `linear-gradient(135deg, ${bg.gradientFrom}, ${bg.gradientTo})`;
+            } else {
+                preview.style.background = 'radial-gradient(circle at top, #3b82f6, #111827)';
+            }
+        }
+
+        // 显示状态信息
+        function showStatus(message, type) {
+            const statusDiv = document.getElementById('status');
+            statusDiv.textContent = message;
+            statusDiv.className = `status ${type}`;
+            statusDiv.style.display = 'block';
+            setTimeout(() => {
+                statusDiv.style.display = 'none';
+            }, 3000);
+        }
+
+        function addBulkRow() {
+            const tbody = document.getElementById('bulk-table-body');
+            if (!tbody) return;
+            const tr = document.createElement('tr');
+            tr.innerHTML = `
+                <td><input type="text" class="bulk-input-name" placeholder="应用名称"></td>
+                <td><input type="text" class="bulk-input-external" placeholder="https://"></td>
+                <td><input type="text" class="bulk-input-internal" placeholder="http://"></td>
+                <td><input type="text" class="bulk-input-icon" placeholder="img/png/Edge.svg"></td>
+                <td><button type="button" class="delete-row-btn" onclick="deleteBulkRow(this)">删除</button></td>
+            `;
+            tbody.appendChild(tr);
+        }
+
+        function deleteBulkRow(button) {
+            const row = button.closest('tr');
+            if (row) {
+                row.remove();
+            }
+        }
+
+        function clearBulkTable() {
+            const tbody = document.getElementById('bulk-table-body');
+            if (!tbody) return;
+            tbody.innerHTML = '';
+            addBulkRow();
+        }
+
+        function importFromTable() {
+            const tbody = document.getElementById('bulk-table-body');
+            if (!tbody) return;
+            if (!config || !Array.isArray(config.applications)) {
+                showStatus('配置尚未加载完成', 'error');
+                return;
+            }
+            const rows = Array.from(tbody.querySelectorAll('tr'));
+            let added = 0;
+            let updated = 0;
+            rows.forEach(row => {
+                const nameInput = row.querySelector('.bulk-input-name');
+                const externalInput = row.querySelector('.bulk-input-external');
+                const internalInput = row.querySelector('.bulk-input-internal');
+                const iconInput = row.querySelector('.bulk-input-icon');
+                if (!nameInput || !externalInput || !internalInput || !iconInput) {
+                    return;
+                }
+                const name = nameInput.value.trim();
+                const externalUrl = externalInput.value.trim();
+                const internalUrl = internalInput.value.trim();
+                const icon = iconInput.value.trim();
+                if (!name) {
+                    return;
+                }
+                const appData = {
+                    name,
+                    external_url: externalUrl,
+                    internal_url: internalUrl,
+                    icon
+                };
+                const existingIndex = config.applications.findIndex(app => app.name === name);
+                if (existingIndex !== -1) {
+                    config.applications[existingIndex] = appData;
+                    updated += 1;
+                } else {
+                    config.applications.push(appData);
+                    added += 1;
+                }
+            });
+            if (added === 0 && updated === 0) {
+                showStatus('没有有效数据可以导入', 'error');
+                return;
+            }
+            saveConfig();
+            renderApps();
+            showStatus('已从表格保存 ' + added + ' 个新应用，更新 ' + updated + ' 个应用', 'success');
+        }
+
+        // 打开添加模态框
+        function openAddModal() {
+            currentEditingIndex = null;
+            document.getElementById('modalTitle').textContent = '添加应用';
+            document.getElementById('appForm').reset();
+            document.getElementById('appModal').style.display = 'block';
+        }
+
+        // 打开编辑模态框
+        function editApp(index) {
+            currentEditingIndex = index;
+            const app = config.applications[index];
+            
+            document.getElementById('modalTitle').textContent = '编辑应用';
+            document.getElementById('appName').value = app.name;
+            document.getElementById('appExternalUrl').value = app.external_url;
+            document.getElementById('appInternalUrl').value = app.internal_url;
+            document.getElementById('appIcon').value = app.icon;
+            document.getElementById('appModal').style.display = 'block';
+        }
+
+        // 关闭模态框
+        function closeModal() {
+            document.getElementById('appModal').style.display = 'none';
+        }
+
+        // 删除应用
+        function deleteApp(index) {
+            if (confirm('确定要删除这个应用吗？')) {
+                config.applications.splice(index, 1);
+                saveConfig();
+                renderApps();
+                showStatus('应用已删除', 'success');
+            }
+        }
+
+        async function saveConfig() {
+            try {
+                localStorage.setItem(CONFIG_KEY, JSON.stringify(config));
+                await saveConfigToServer(config);
+                showStatus('配置已保存', 'success');
+            } catch (error) {
+                showStatus('保存失败: ' + error.message, 'error');
+            }
+        }
+
+        // 表单提交处理
+        document.getElementById('appForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const name = document.getElementById('appName').value;
+            const externalUrl = document.getElementById('appExternalUrl').value;
+            const internalUrl = document.getElementById('appInternalUrl').value;
+            const icon = document.getElementById('appIcon').value;
+            
+            const appData = { 
+                name, 
+                external_url: externalUrl, 
+                internal_url: internalUrl, 
+                icon 
+            };
+            
+            if (currentEditingIndex !== null) {
+                // 编辑模式
+                config.applications[currentEditingIndex] = appData;
+                showStatus('应用已更新', 'success');
+            } else {
+                // 添加模式
+                config.applications.push(appData);
+                showStatus('应用已添加', 'success');
+            }
+            
+            saveConfig();
+            renderApps();
+            closeModal();
+        });
+
+        document.addEventListener('DOMContentLoaded', function() {
+            loadConfig();
+            clearBulkTable();
+            const modeInputs = document.querySelectorAll('input[name="bgMode"]');
+            modeInputs.forEach(input => {
+                input.addEventListener('change', function() {
+                    if (!config) return;
+                    ensureBackgroundConfig();
+                    config.background.mode = this.value;
+                    updateBackgroundVisibility();
+                    updateBackgroundPreview();
+                    saveConfig();
+                });
+            });
+            const solidColorInput = document.getElementById('bgSolidColor');
+            const solidColorText = document.getElementById('bgSolidColorText');
+            const gradientFromInput = document.getElementById('bgGradientFrom');
+            const gradientFromText = document.getElementById('bgGradientFromText');
+            const gradientToInput = document.getElementById('bgGradientTo');
+            const gradientToText = document.getElementById('bgGradientToText');
+            if (solidColorInput && solidColorText) {
+                solidColorInput.addEventListener('input', function() {
+                    if (!config) return;
+                    config.background.solidColor = this.value;
+                    solidColorText.value = this.value;
+                    updateBackgroundPreview();
+                    saveConfig();
+                });
+                solidColorText.addEventListener('blur', function() {
+                    if (!config) return;
+                    const value = this.value.trim();
+                    if (!value) return;
+                    config.background.solidColor = value;
+                    solidColorInput.value = value;
+                    updateBackgroundPreview();
+                    saveConfig();
+                });
+            }
+            if (gradientFromInput && gradientFromText) {
+                gradientFromInput.addEventListener('input', function() {
+                    if (!config) return;
+                    config.background.gradientFrom = this.value;
+                    gradientFromText.value = this.value;
+                    updateBackgroundPreview();
+                    saveConfig();
+                });
+                gradientFromText.addEventListener('blur', function() {
+                    if (!config) return;
+                    const value = this.value.trim();
+                    if (!value) return;
+                    config.background.gradientFrom = value;
+                    gradientFromInput.value = value;
+                    updateBackgroundPreview();
+                    saveConfig();
+                });
+            }
+            if (gradientToInput && gradientToText) {
+                gradientToInput.addEventListener('input', function() {
+                    if (!config) return;
+                    config.background.gradientTo = this.value;
+                    gradientToText.value = this.value;
+                    updateBackgroundPreview();
+                    saveConfig();
+                });
+                gradientToText.addEventListener('blur', function() {
+                    if (!config) return;
+                    const value = this.value.trim();
+                    if (!value) return;
+                    config.background.gradientTo = value;
+                    gradientToInput.value = value;
+                    updateBackgroundPreview();
+                    saveConfig();
+                });
+            }
+        });
+
+        // 点击模态框外部关闭
+        window.onclick = function(event) {
+            const modal = document.getElementById('appModal');
+            if (event.target === modal) {
+                closeModal();
+            }
+        }
+    </script>
+</body>
+</html>

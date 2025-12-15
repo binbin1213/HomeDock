@@ -1,0 +1,82 @@
+{
+  "background": {
+    "mode": "wallpaper",
+    "solidColor": "#202124",
+    "gradientFrom": "#141e30",
+    "gradientTo": "#243b55"
+  },
+  "applications": [
+    {
+      "name": "我的博客",
+      "external_url": "#",
+      "internal_url": "#",
+      "icon": "img/png/AppStore.png"
+    },
+    {
+      "name": "VPS Status",
+      "external_url": "https://info.koolnet.club",
+      "internal_url": "http://xxxxx.com",
+      "icon": "img/png/iCloud-Drive.png"
+    },
+    {
+      "name": "聆听音乐",
+      "external_url": "#",
+      "internal_url": "#",
+      "icon": "img/png/Music.png"
+    },
+    {
+      "name": "流金岁月",
+      "external_url": "#",
+      "internal_url": "#",
+      "icon": "img/png/Photos.png"
+    },
+    {
+      "name": "欣赏影片",
+      "external_url": "http://xxxxx.com",
+      "internal_url": "http://xxxxx.com",
+      "icon": "img/png/Videos.png"
+    },
+    {
+      "name": "迅雷远程",
+      "external_url": "http://yuancheng.xunlei.com/",
+      "internal_url": "http://yuancheng.xunlei.com/",
+      "icon": "img/png/Thunder.png"
+    },
+    {
+      "name": "下载管理",
+      "external_url": "http://xxxxx.com",
+      "internal_url": "http://xxxxx.com",
+      "icon": "img/png/Downloads.png"
+    },
+    {
+      "name": "Transmission",
+      "external_url": "http://xxxxx.com",
+      "internal_url": "http://xxxxx.com",
+      "icon": "img/png/Transmission.png"
+    },
+    {
+      "name": "DSM管理",
+      "external_url": "http://xxxxx.com",
+      "internal_url": "http://xxxxx.com",
+      "icon": "img/png/Settings.png"
+    },
+    {
+      "name": "管理文件",
+      "external_url": "http://xxxxx.com",
+      "internal_url": "http://xxxxx.com",
+      "icon": "img/png/FontExplorer-X.png"
+    },
+    {
+      "name": "管理路由器",
+      "external_url": "http://xxxxx.com",
+      "internal_url": "http://xxxxx.com",
+      "icon": "img/png/Podcats.png"
+    },
+    {
+      "name": "监控系统",
+      "external_url": "#",
+      "internal_url": "#",
+      "icon": "img/png/FaceTime.png"
+    }
+  ]
+}
