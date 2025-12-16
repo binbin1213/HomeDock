@@ -9,7 +9,8 @@ HomeDock 是一个为 NAS / 家庭服务器 / VPS 设计的「起始页 + 应用
 - 一个独立的后台页面，用于**可视化编辑应用列表与背景设置**；
 - 可选的 Cloudflare Worker + KV 云端配置存储，以及 NAS 自托管部署方案。
 
-整个项目是纯静态前端，无需打包构建，直接部署 `web` 目录即可运行。
+整个项目以纯静态前端为核心，无需打包构建，直接部署 `web` 目录即可运行；  
+如需在本地 / NAS 上实现「多终端共享同一份配置」，可以配合轻量级 Python 后端 `dev-server.py` 使用。
 
 ---
 
@@ -38,15 +39,21 @@ HomeDock 是一个为 NAS / 家庭服务器 / VPS 设计的「起始页 + 应用
   - 批量导入表格  
   - 背景模式与颜色配置  
 - `apps-config.json`：默认应用配置模板  
+- `js/`：前端脚本目录  
+  - `js/modules/config-manager.js`：统一管理 `/api/config` / `localStorage` / 默认模板三层配置来源  
+  - `js/modules/app-renderer.js`：首页应用网格渲染、拖拽排序、分页等  
+  - `js/modules/ui-controller.js`：首页编辑模态框、图标选择器、搜索栏等 UI 行为  
+  - `js/preset-icons.js`：预设应用图标列表，以 `window.PRESET_ICONS` 形式在首页和后台共用  
 - `css/style.css`：主要页面样式  
 - `img/`：通用图片资源  
 - `img/png/`：各应用图标资源  
 - `homedocker.svg` / `homedocker.ico`：HomeDock 图标与浏览器标签页图标  
-- `server.py`：本地开发/自托管用的简单 Python 静态服务器（含必应壁纸代理）  
+- `dev-server.py`：增强版开发 / 自托管服务器，提供静态文件、`/api/config` 与 `/bing-wallpaper`，支持在 NAS 上将配置持久化到 `apps-config.json`  
 - `cloudflare-worker.js`：Cloudflare Worker 脚本（配置 API + 壁纸代理）  
 - `wrangler.toml`：Cloudflare Worker 部署配置  
 - `docs/DEPLOY_CLOUDFLARE.md`：部署到 Cloudflare 的详细说明  
 - `docs/PROJECT_ANALYSIS.md`：项目结构与逻辑的深入分析（开发向）  
+- `docs/NAS_DEPLOY.md`：在 NAS / 家庭服务器上部署的详细说明（纯静态 / dev-server.py / Docker 三种模式）  
 
 ---
 
@@ -182,26 +189,31 @@ HomeDock 支持三种主要部署方式：
    - 多浏览器、多设备共享同一份配置。  
    - 详见 `docs/DEPLOY_CLOUDFLARE.md`。
 
-2. **NAS Docker 部署（自托管，带壁纸）**  
-   - 使用 `Dockerfile` 构建镜像：  
-     - 基于 Python 3 + `server.py`；  
-     - 提供静态文件和 `/bing-wallpaper` 接口；  
-   - 配置仅存储在各浏览器的 `localStorage['homedock-config']` 中；  
-   - 适合家庭局域网使用。  
-   - 详细步骤见 `docs/DEPLOY_CLOUDFLARE.md` 第 10.1 节。
+2. **NAS / 家庭服务器部署（自托管，带壁纸，可共享配置）**  
+   - 在 NAS / 家庭服务器上运行 Python 3 + `dev-server.py`：  
+     - 提供静态文件；  
+     - 通过 `/api/config` 读写本地 `apps-config.json`，实现多设备共享同一份配置；  
+     - 通过 `/bing-wallpaper` 代理必应每日壁纸；  
+   - 可以直接在宿主机上运行 `python3 dev-server.py`，也可以通过 Docker / docker-compose 方式运行（推荐后者，便于备份与迁移）；  
+   - 配置同时保存在：
+     - 服务器本地：`apps-config.json`（由 `dev-server.py` 负责读写）；  
+     - 浏览器本地：`localStorage['homedock-config']`（前端缓存，加快加载速度）；  
+   - 详细步骤见 `docs/NAS_DEPLOY.md`：  
+     - 模式二：NAS + Python `dev-server.py`；  
+     - 模式三：Docker 部署（容器化 NAS / 家庭服务器）。  
 
 3. **NAS 纯静态部署（自托管，无服务端功能）**  
-   - 将 `index.html`、`admin.html`、`css/`、`img/`、`apps-config.json` 上传到 NAS Web 根目录；  
+   - 将 `index.html`、`admin.html`、`css/`、`img/`、`apps-config.json`、`js/` 等静态资源上传到 NAS Web 根目录；  
    - 不跑任何后端程序，无法使用 `/bing-wallpaper` 和云端配置 API；  
-   - 配置依然保存在浏览器 `localStorage`；  
+   - 配置仅保存在各浏览器的 `localStorage['homedock-config']` 中，不会回写 `apps-config.json`；  
    - 建议在后台中选择「纯色」或「渐变」背景模式。  
-   - 详细说明见 `docs/DEPLOY_CLOUDFLARE.md` 第 10.2 节。
+   - 详细说明见 `docs/NAS_DEPLOY.md` 中的「模式一：纯静态部署」。
 
 ---
 
 ## 7. 本地开发与调试
 
-### 6.1 直接打开文件
+### 7.1 直接打开文件
 
 最简单的方式：在文件管理器中双击 `index.html` / `admin.html`。
 
@@ -210,12 +222,12 @@ HomeDock 支持三种主要部署方式：
   - `/api/config` 与 `/bing-wallpaper` 请求会失败，前端会自动退回到 `apps-config.json` + `localStorage` 模式；
   - 一些与后端相关的功能无法体验。
 
-### 6.2 使用 Python 服务器（推荐）
+### 7.2 使用 Python dev-server（推荐）
 
 在 `web` 目录下执行：
 
 ```bash
-python server.py
+python dev-server.py
 ```
 
 然后访问：
@@ -225,9 +237,12 @@ python server.py
 
 此时：
 
-- 静态文件由 `server.py` 提供；  
-- `/bing-wallpaper` 可用（本地代理必应壁纸）；
-- `/api/config` 若没有 Cloudflare Worker，会返回 404，前端自动退回本地配置模式。
+- 静态文件由 `dev-server.py` 提供；  
+- `/bing-wallpaper` 可用（本地代理必应壁纸）；  
+- `/api/config` 由 `dev-server.py` 直接处理：  
+  - `GET /api/config` → 从当前目录的 `apps-config.json` 读取配置；  
+  - `POST /api/config` / `PUT /api/config` → 将最新配置写回 `apps-config.json`；  
+- 前端仍然会把最近一次成功加载的配置缓存到 `localStorage['homedock-config']` 中，用于加速加载与离线访问。
 
 ---
 
@@ -258,13 +273,21 @@ HomeDock 的主图标文件：
 - 可以在提交时简单说明该图标对应的服务或应用名称；
 - 推荐通过 Pull Request 的方式提交（见下方「贡献指南」）。
 
-目前后台页面中的图标选择器仅预设了部分常见服务的映射，不会自动覆盖或修改你在 `apps-config.json` 或配置界面中手动填写的图标路径：
+目前首页与后台页面中的图标选择器已经统一，无论是在首页右键编辑弹窗还是在 `admin.html` 中，都支持：
 
-- 预设列表来源：`admin.html` 中的 `PRESET_ICONS` 常量；  
-- 如果你添加了新的图标文件，但还没在 `PRESET_ICONS` 里配置映射，它不会自动出现在图标选择器里；  
-- 这类图标仍然可以通过在应用编辑表单中手工填入 `img/png/xxx.svg` 路径的方式使用。
+- 浏览预设图标：  
+  - 预设列表来源：`js/preset-icons.js` 中的 `window.PRESET_ICONS`；  
+  - 该列表在首页和后台共用，不再分别写死在不同页面里。  
+- 上传自定义图标：  
+  - 通过文件上传将图片读为 Data URL，直接写入配置中的 `icon` 字段；  
+  - 不需要把图片手动拷贝到 `img/` 目录；  
+  - 适合已经部署到 NAS / 远程服务器之后再做个性化定制。  
+- 填写远程图标 URL：  
+  - 例如填写 `https://example.com/logo.png`；  
+  - 前端会在 CSP 允许的前提下正常加载显示。  
 
-后续我们会在后台图标选择器中自动展示这些新增图标，方便大家直接使用。
+如果你在 `img/png/` 下新增了图标文件，但还没有在 `js/preset-icons.js` 里为它添加映射，它暂时不会自动出现在图标选择器的预设列表中；  
+这类图标仍然可以通过在应用编辑表单中手工填入 `img/png/xxx.svg` / `img/png/xxx.png` 路径的方式使用。
 
 ---
 

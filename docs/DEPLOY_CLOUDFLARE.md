@@ -22,7 +22,7 @@
 - `cloudflare-worker.js`：Cloudflare Worker 逻辑（配置接口 + 必应壁纸）。
 - `wrangler.toml`：Worker 的部署配置文件。
 
-> 注意：本地开发时仍可以用 `server.py` 起一个简单的 HTTP 服务器；线上部署到 Cloudflare 后不再需要 `server.py`。
+> 注意：本地开发时推荐使用 `dev-server.py`（或启动脚本 `start-dev.sh`）起一个带 `/api/config` 的开发服务器；线上部署到 Cloudflare 后不再需要本地 Python 服务器。
 
 ---
 

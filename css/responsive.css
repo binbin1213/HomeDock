@@ -1,0 +1,437 @@
+/**
+ * 响应式设计样式
+ * 针对不同屏幕尺寸优化显示效果
+ */
+
+/* 平板设备优化 (768px - 1024px) */
+@media screen and (max-width: 1024px) {
+  #wrap {
+    padding: 20px;
+    max-width: 100%;
+  }
+
+  #top {
+    margin-bottom: 30px;
+  }
+
+  #logo h1 {
+    font-size: 2.2em;
+  }
+
+  .app-item {
+    width: 110px;
+    height: 110px;
+  }
+
+  .app-item img {
+    width: 56px;
+    height: 56px;
+  }
+
+  .app-item strong {
+    font-size: 12px;
+    margin-top: 8px;
+  }
+
+  /* 搜索框优化 */
+  #search-container {
+    max-width: 600px;
+    margin: 0 auto 30px;
+  }
+
+  #search-input {
+    font-size: 16px; /* 防止iOS自动缩放 */
+  }
+
+  /* 编辑按钮调整 */
+  .edit-btn {
+    font-size: 28px !important;
+    padding: 8px !important;
+  }
+
+  .delete-btn {
+    width: 18px !important;
+    height: 18px !important;
+    font-size: 10px !important;
+  }
+}
+
+/* 手机设备优化 (≤768px) */
+@media screen and (max-width: 768px) {
+  #wrap {
+    padding: 15px;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+  }
+
+  #top {
+    margin-bottom: 25px;
+    text-align: center;
+  }
+
+  #logo h1 {
+    font-size: 1.8em;
+    margin: 10px 0;
+  }
+
+  /* 搜索框完全重新设计 */
+  #search-container {
+    order: -1;
+    margin: 0 0 25px;
+    width: 100%;
+  }
+
+  #current-engine-wrapper {
+    display: none; /* 移动端隐藏引擎图标 */
+  }
+
+  #search-box {
+    position: relative;
+    width: 100%;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 25px;
+    padding: 0;
+    backdrop-filter: blur(10px);
+  }
+
+  #search-input {
+    width: 100%;
+    padding: 15px 50px 15px 20px;
+    border: none;
+    border-radius: 25px;
+    background: transparent;
+    color: #ffffff;
+    font-size: 16px;
+    outline: none;
+  }
+
+  #search-input::placeholder {
+    color: rgba(255, 255, 255, 0.7);
+  }
+
+  /* 搜索按钮 */
+  #change-wallpaper-btn {
+    display: none; /* 移动端隐藏壁纸按钮 */
+  }
+
+  /* 引擎切换重新设计 */
+  #engine-switch {
+    position: absolute;
+    right: 5px;
+    top: 50%;
+    transform: translateY(-50%);
+    display: flex;
+    gap: 2px;
+  }
+
+  .engine-pill {
+    background: rgba(255, 255, 255, 0.2);
+    border: none;
+    border-radius: 15px;
+    padding: 8px 12px;
+    font-size: 11px;
+    color: #ffffff;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .engine-pill.active {
+    background: rgba(255, 255, 255, 0.4);
+  }
+
+  /* 应用网格优化 */
+  #main {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+  }
+
+  .app {
+    width: 100%;
+  }
+
+  .app ul {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(80px, 1fr));
+    gap: 15px;
+    padding: 0;
+    margin: 0;
+    list-style: none;
+  }
+
+  .app-item {
+    width: 80px !important;
+    height: 80px !important;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 10px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 15px;
+    backdrop-filter: blur(10px);
+    transition: all 0.3s;
+  }
+
+  .app-item:hover {
+    background: rgba(255, 255, 255, 0.15);
+    transform: translateY(-2px);
+  }
+
+  body.edit-mode .app-item {
+    background: transparent !important;
+    backdrop-filter: none !important;
+  }
+
+  body.edit-mode .app-item:hover {
+    background: transparent !important;
+    backdrop-filter: none !important;
+  }
+
+  .app-item img {
+    width: 40px;
+    height: 40px;
+    margin-bottom: 8px;
+  }
+
+  .app-item strong {
+    font-size: 11px;
+    line-height: 1.2;
+    text-align: center;
+    word-break: break-word;
+    margin: 0;
+  }
+
+  .app-item a {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-decoration: none;
+    color: inherit;
+    width: 100%;
+    height: 100%;
+  }
+
+  /* 编辑模式优化 */
+  .edit-btn {
+    font-size: 20px !important;
+    padding: 6px !important;
+    top: 2px !important;
+    right: 2px !important;
+  }
+
+  .delete-btn {
+    width: 16px !important;
+    height: 16px !important;
+    font-size: 9px !important;
+  }
+
+  /* 控制按钮优化 */
+  #kg-btn {
+    position: fixed;
+    top: 15px;
+    right: 15px;
+    z-index: 1000;
+    background: rgba(0, 0, 0, 0.5);
+    padding: 10px;
+    border-radius: 20px;
+    backdrop-filter: blur(10px);
+  }
+
+  #edit-toggle-btn {
+    font-size: 12px;
+    padding: 6px 12px;
+    margin-left: 10px;
+  }
+
+  /* 分页按钮隐藏 */
+  .page-arrow {
+    display: none;
+  }
+
+  /* 添加应用按钮优化 */
+  .add-app-item {
+    background: rgba(255, 255, 255, 0.05);
+    border: 2px dashed rgba(255, 255, 255, 0.3);
+  }
+
+  .add-app-item-inner {
+    color: rgba(255, 255, 255, 0.8);
+    font-size: 11px;
+  }
+
+  /* 模态框优化 */
+  .edit-modal-content {
+    width: 95%;
+    margin: 20px;
+    max-height: 90vh;
+    overflow-y: auto;
+  }
+
+  .form-group input {
+    font-size: 16px; /* 防止iOS缩放 */
+    padding: 12px 15px;
+  }
+
+  .form-actions {
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .btn-save, .btn-cancel {
+    width: 100%;
+    padding: 12px;
+  }
+}
+
+/* 小屏手机优化 (≤480px) */
+@media screen and (max-width: 480px) {
+  #wrap {
+    padding: 10px;
+  }
+
+  #logo h1 {
+    font-size: 1.5em;
+  }
+
+  .app ul {
+    grid-template-columns: repeat(auto-fit, minmax(70px, 1fr));
+    gap: 10px;
+  }
+
+  .app-item {
+    width: 70px !important;
+    height: 70px !important;
+    padding: 8px;
+  }
+
+  .app-item img {
+    width: 32px;
+    height: 32px;
+    margin-bottom: 6px;
+  }
+
+  .app-item strong {
+    font-size: 10px;
+  }
+
+  /* 搜索框进一步优化 */
+  #search-input {
+    padding: 12px 45px 12px 15px;
+    font-size: 14px;
+  }
+
+  .engine-pill {
+    padding: 6px 8px;
+    font-size: 10px;
+  }
+
+  /* 控制按钮更小 */
+  #edit-toggle-btn {
+    font-size: 11px;
+    padding: 4px 8px;
+  }
+
+  /* 通知优化 */
+  .notification-container {
+    left: 10px;
+    right: 10px;
+    top: 60px;
+  }
+
+  .notification {
+    font-size: 13px;
+    padding: 12px;
+  }
+}
+
+/* 超小屏优化 (≤360px) */
+@media screen and (max-width: 360px) {
+  .app ul {
+    grid-template-columns: repeat(3, 1fr);
+  }
+
+  .app-item {
+    width: 65px !important;
+    height: 65px !important;
+  }
+
+  .app-item img {
+    width: 28px;
+    height: 28px;
+  }
+
+  .app-item strong {
+    font-size: 9px;
+  }
+}
+
+/* 横屏模式优化 */
+@media screen and (orientation: landscape) and (max-height: 500px) {
+  #wrap {
+    padding: 10px 20px;
+  }
+
+  #top {
+    margin-bottom: 15px;
+  }
+
+  #logo h1 {
+    font-size: 1.6em;
+    margin: 5px 0;
+  }
+
+  #search-container {
+    margin-bottom: 15px;
+  }
+
+  .app ul {
+    grid-template-columns: repeat(auto-fit, minmax(70px, 1fr));
+    gap: 8px;
+  }
+
+  .app-item {
+    width: 70px !important;
+    height: 70px !important;
+    padding: 5px;
+  }
+
+  .app-item img {
+    width: 30px;
+    height: 30px;
+    margin-bottom: 4px;
+  }
+
+  .app-item strong {
+    font-size: 9px;
+  }
+}
+
+/* 高分辨率屏幕优化 */
+@media screen and (min-resolution: 2dppx) {
+  .app-item img {
+    image-rendering: -webkit-optimize-contrast;
+    image-rendering: crisp-edges;
+  }
+}
+
+/* 打印样式 */
+@media print {
+  * {
+    background: white !important;
+    color: black !important;
+    box-shadow: none !important;
+  }
+
+  #kg-btn, .icon-btn, #change-wallpaper-btn, .page-arrow {
+    display: none !important;
+  }
+
+  .app-item {
+    border: 1px solid #ccc;
+    break-inside: avoid;
+  }
+}

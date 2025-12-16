@@ -12,43 +12,41 @@
         }
 
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: #1c1c1c;
+            font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+            background: #111827;
             min-height: 100vh;
-            padding: 24px;
-            color: #e4e4e4;
+            padding: 32px 16px;
+            color: #e5e7eb;
         }
 
         .container {
             max-width: 1100px;
             margin: 0 auto;
-            background: #2b2b2b;
-            border-radius: 18px;
-            box-shadow: 0 24px 60px rgba(0,0,0,0.55);
+            background: #111827;
+            border-radius: 16px;
+            border: 1px solid #1f2937;
+            box-shadow: 0 14px 30px rgba(15, 23, 42, 0.7);
             overflow: hidden;
-            border: 1px solid #444444;
         }
 
         .header {
-            background: #262626;
-            color: #f0f0f0;
-            padding: 22px 28px;
-            text-align: left;
-            border-bottom: 1px solid #3a3a3a;
+            padding: 18px 24px;
+            border-bottom: 1px solid #1f2937;
         }
 
         .header h1 {
-            font-size: 22px;
-            margin-bottom: 6px;
+            font-size: 18px;
+            margin-bottom: 4px;
+            color: #e5e7eb;
         }
 
         .header p {
-            opacity: 0.8;
             font-size: 13px;
+            color: #9ca3af;
         }
 
         .content {
-            padding: 24px 28px 28px;
+            padding: 20px 24px 24px;
         }
 
         .tab-content {
@@ -72,10 +70,10 @@
         }
 
         .add-app-btn {
-            background-image: linear-gradient(135deg, #1f4fad 0%, #1163d8 100%);
-            color: #ffffff;
+            background: #4b5563;
+            color: #e5e7eb;
             border: none;
-            padding: 9px 18px;
+            padding: 8px 16px;
             border-radius: 999px;
             cursor: pointer;
             font-size: 13px;
@@ -84,7 +82,7 @@
         }
 
         .add-app-btn:hover {
-            background-image: linear-gradient(135deg, #3b96f0 0%, #03d9e5 100%);
+            background: #6b7280;
         }
 
         .app-list {
@@ -94,17 +92,17 @@
         }
 
         .app-item {
-            background: #323232;
-            border: 1px solid #3f3f3f;
+            background: #111827;
+            border: 1px solid #1f2937;
             border-radius: 12px;
-            padding: 18px;
-            transition: border-color 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease;
+            padding: 16px;
+            transition: border-color 0.15s ease, box-shadow 0.15s ease, transform 0.15s ease;
         }
 
         .app-item:hover {
-            border-color: #4facfe;
-            transform: translateY(-2px);
-            box-shadow: 0 10px 30px rgba(0,0,0,0.4);
+            border-color: #4b5563;
+            box-shadow: 0 8px 18px rgba(15, 23, 42, 0.7);
+            transform: translateY(-1px);
         }
 
         .app-info {
@@ -179,16 +177,16 @@
         }
 
         .modal-content {
-            background: #2b2b2b;
-            margin: 5% auto;
-            padding: 30px;
-            border-radius: 16px;
+            background: #111827;
+            margin: 40px auto;
+            padding: 24px 24px 20px;
+            border-radius: 14px;
             width: 90%;
-            max-width: 500px;
+            max-width: 480px;
             position: relative;
-            color: #e4e4e4;
-            border: 1px solid #444444;
-            box-shadow: 0 24px 60px rgba(0,0,0,0.55);
+            color: #e5e7eb;
+            border: 1px solid #1f2937;
+            box-shadow: 0 14px 30px rgba(15, 23, 42, 0.8);
         }
 
         .close {
@@ -235,10 +233,10 @@
         }
 
         .save-btn {
-            background-image: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
-            color: #f5f5f5;
+            background: #4b5563;
+            color: #e5e7eb;
             border: none;
-            padding: 10px 26px;
+            padding: 10px 20px;
             border-radius: 999px;
             cursor: pointer;
             font-size: 14px;
@@ -248,7 +246,7 @@
         }
 
         .save-btn:hover {
-            background-image: linear-gradient(135deg, #3b96f0 0%, #03d9e5 100%);
+            background: #6b7280;
         }
 
         .back-btn {
@@ -306,26 +304,26 @@
         }
 
         .bulk-btn {
-            border: 1px solid rgba(255,255,255,0.2);
             border-radius: 999px;
             padding: 6px 14px;
             cursor: pointer;
             font-size: 0.85em;
             font-weight: 500;
+            border: 1px solid #4b5563;
             background: transparent;
-            color: #dddddd;
+            color: #e5e7eb;
         }
 
         .bulk-btn.primary {
             border: none;
-            background-image: linear-gradient(135deg, #1f4fad 0%, #1163d8 100%);
-            color: #ffffff;
+            background: #4b5563;
+            color: #e5e7eb;
         }
 
         .bulk-btn.import {
             border: none;
-            background-image: linear-gradient(135deg, #1e874b 0%, #199154 100%);
-            color: #ffffff;
+            background: #4b5563;
+            color: #e5e7eb;
         }
 
         .bulk-table {
@@ -342,16 +340,58 @@
         }
 
         .bulk-table th {
-            background: #343a40;
-            color: #e4e4e4;
+            background: #111827;
+            color: #e5e7eb;
         }
 
         .bulk-table input {
             width: 100%;
-            border: 1px solid #dee2e6;
+            border: 1px solid #4b5563;
             border-radius: 4px;
             padding: 6px 8px;
             font-size: 0.9em;
+            background: #111827;
+            color: #e5e7eb;
+        }
+
+        .bulk-icon-wrapper {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .bulk-icon-wrapper .bulk-input-icon {
+            flex: 1;
+        }
+
+        .bulk-icon-preview {
+            width: 28px;
+            height: 28px;
+            border-radius: 6px;
+            border: 1px solid #4b5563;
+            background-size: cover;
+            background-position: center;
+            background-color: #111827;
+        }
+
+        .bulk-icon-preview.bulk-icon-empty {
+            opacity: 0.4;
+            background-image: none;
+        }
+
+        .bulk-icon-btn {
+            border: none;
+            background: #374151;
+            color: #e5e7eb;
+            border-radius: 999px;
+            padding: 4px 8px;
+            font-size: 0.75em;
+            cursor: pointer;
+            white-space: nowrap;
+        }
+
+        .bulk-icon-btn:hover {
+            background: #4b5563;
         }
 
         .delete-row-btn {
@@ -459,20 +499,18 @@
             justify-content: center;
             padding: 6px 14px;
             border-radius: 999px;
-            border: 1px solid #3f3f3f;
-            background: #252525;
-            color: #d0d0d0;
+            border: 1px solid #4b5563;
+            background: #111827;
+            color: #e5e7eb;
             cursor: pointer;
-            transition: background 0.18s ease, border-color 0.18s ease, color 0.18s ease, box-shadow 0.18s ease, transform 0.18s ease;
+            transition: background 0.18s ease, border-color 0.18s ease, color 0.18s ease;
             min-width: 96px;
         }
 
         .bg-mode-option input:checked + span {
-            background-image: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
-            border-color: transparent;
-            color: #0b1220;
-            box-shadow: 0 8px 18px rgba(15, 118, 255, 0.45);
-            transform: translateY(-1px);
+            background: #4b5563;
+            border-color: #6b7280;
+            color: #f9fafb;
         }
 
         .bg-color-row {
@@ -516,8 +554,8 @@
             width: 100%;
             height: 52px;
             border-radius: 12px;
-            border: 1px solid #444444;
-            box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.35);
+            border: 1px solid #4b5563;
+            box-shadow: none;
         }
 
         @media (max-width: 768px) {
@@ -534,6 +572,7 @@
             }
         }
     </style>
+    <script src="js/preset-icons.js"></script>
 </head>
 <body>
     <div class="container">
@@ -596,6 +635,29 @@
                         </div>
                     </div>
 
+                    <div class="form-group">
+                        <label>背景模糊效果:</label>
+                        <div class="bg-mode-group">
+                            <label class="bg-mode-option">
+                                <input type="radio" name="bgBlur" value="none" id="bgBlurNone">
+                                <span>无模糊</span>
+                            </label>
+                            <label class="bg-mode-option">
+                                <input type="radio" name="bgBlur" value="light" id="bgBlurLight">
+                                <span>轻度模糊</span>
+                            </label>
+                            <label class="bg-mode-option">
+                                <input type="radio" name="bgBlur" value="medium" id="bgBlurMedium">
+                                <span>中度模糊</span>
+                            </label>
+                            <label class="bg-mode-option">
+                                <input type="radio" name="bgBlur" value="heavy" id="bgBlurHeavy">
+                                <span>深度模糊</span>
+                            </label>
+                        </div>
+                        <div class="form-hint">选择背景模糊效果来优化视觉体验。轻度模糊保持背景细节，中度模糊提高内容可读性，深度模糊营造氛围感。</div>
+                    </div>
+
                     <div class="form-group" id="bg-solid-settings">
                         <label for="bgSolidColor">纯色背景颜色:</label>
                         <div class="bg-color-row">
@@ -649,6 +711,8 @@
                     <label for="appIcon">图标路径:</label>
                     <input type="text" id="appIcon" placeholder="img/png/Edge.svg">
                     <button type="button" class="icon-picker-toggle" onclick="toggleIconPicker()">浏览预设图标</button>
+                    <button type="button" class="icon-picker-toggle" onclick="triggerCustomIconUpload()">上传自定义图标</button>
+                    <input type="file" id="customIconFile" accept="image/*" style="display:none">
                     <div id="iconPicker" class="icon-picker">
                         <div class="icon-picker-grid" id="iconPickerGrid"></div>
                     </div>
@@ -663,60 +727,14 @@
         let config = null;
         let currentEditingIndex = null;
 
-        const PRESET_ICONS = [
-            { path: 'img/png/Edge.svg', name: 'Edge' },
-            { path: 'img/png/Firefox.svg', name: 'Firefox' },
-            { path: 'img/png/Adminer.svg', name: 'Adminer' },
-            { path: 'img/png/Ai.svg', name: 'Ai' },
-            { path: 'img/png/Alist.svg', name: 'Alist' },
-            { path: 'img/png/Aria2.svg', name: 'Aria2' },
-            { path: 'img/png/Book.svg', name: 'Book' },
-            { path: 'img/png/Calibre.png', name: 'Calibre' },
-            { path: 'img/png/Chatgpt.png', name: 'ChatGPT' },
-            { path: 'img/png/Cloud.svg', name: 'Cloud' },
-            { path: 'img/png/Downloads.png', name: 'Downloads' },
-            { path: 'img/png/Emby.svg', name: 'Emby' },
-            { path: 'img/png/FaceTime.png', name: 'FaceTime' },
-            { path: 'img/png/File.svg', name: 'File' },
-            { path: 'img/png/FileBrowser.svg', name: 'FileBrowser' },
-            { path: 'img/png/FileSync.svg', name: 'FileSync' },
-            { path: 'img/png/HPE.svg', name: 'HPE' },
-            { path: 'img/png/Homarr.png', name: 'Homarr' },
-            { path: 'img/png/Jellyfin.svg', name: 'Jellyfin' },
-            { path: 'img/png/KMS.svg', name: 'KMS' },
-            { path: 'img/png/Lucky.svg', name: 'Lucky' },
-            { path: 'img/png/MariaDB.svg', name: 'MariaDB' },
-            { path: 'img/png/MovieTool.svg', name: 'MovieTool' },
-            { path: 'img/png/Music.svg', name: 'Music' },
-            { path: 'img/png/MyAdmin.svg', name: 'MyAdmin' },
-            { path: 'img/png/NasTool.svg', name: 'NasTool' },
-            { path: 'img/png/Openwrt.svg', name: 'OpenWrt' },
-            { path: 'img/png/PVE.svg', name: 'PVE' },
-            { path: 'img/png/Photos.svg', name: 'Photos' },
-            { path: 'img/png/Podcats.png', name: 'Podcasts' },
-            { path: 'img/png/Portainer.svg', name: 'Portainer' },
-            { path: 'img/png/Print.svg', name: 'Print' },
-            { path: 'img/png/Qb.svg', name: 'Qbittorrent' },
-            { path: 'img/png/QingLong.svg', name: 'QingLong' },
-            { path: 'img/png/S-PDF.svg', name: 'S-PDF' },
-            { path: 'img/png/Sam.svg', name: 'Sam' },
-            { path: 'img/png/Server.svg', name: 'Server' },
-            { path: 'img/png/Settings.png', name: 'Settings' },
-            { path: 'img/png/Thunder.png', name: 'Thunder' },
-            { path: 'img/png/Transmission.png', name: 'Transmission' },
-            { path: 'img/png/Unraid.svg', name: 'Unraid' },
-            { path: 'img/png/VM.svg', name: 'VM' },
-            { path: 'img/png/Videos.svg', name: 'Videos' },
-            { path: 'img/png/XunLei.svg', name: 'XunLei' },
-            { path: 'img/png/iCloud-Drive.png', name: 'iCloud Drive' },
-            { path: 'img/png/nginxWebUI.png', name: 'nginxWebUI' },
-            { path: 'img/png/favicon.svg', name: 'Favicon' },
-            { path: 'img/png/favicon2.svg', name: 'Favicon2' },
-            { path: 'img/png/logo.svg', name: 'Logo' },
-            { path: 'img/png/猫logo2.svg', name: '猫Logo' }
-        ];
-
         const CONFIG_KEY = 'homedock-config';
+
+        function triggerCustomIconUpload() {
+            const input = document.getElementById('customIconFile');
+            if (input) {
+                input.click();
+            }
+        }
 
         async function loadConfig() {
             try {
@@ -815,7 +833,7 @@
             const grid = document.getElementById('iconPickerGrid');
             if (!grid) return;
             grid.innerHTML = '';
-            PRESET_ICONS.forEach(icon => {
+            (window.PRESET_ICONS || []).forEach(icon => {
                 const item = document.createElement('div');
                 item.className = 'icon-picker-item';
                 item.innerHTML = `
@@ -855,6 +873,9 @@
             if (!config.background.mode) {
                 config.background.mode = 'wallpaper';
             }
+            if (!config.background.blur) {
+                config.background.blur = 'light';
+            }
             if (!config.background.solidColor) {
                 config.background.solidColor = '#202124';
             }
@@ -871,6 +892,10 @@
             const modeInputs = document.querySelectorAll('input[name="bgMode"]');
             modeInputs.forEach(input => {
                 input.checked = input.value === bg.mode;
+            });
+            const blurInputs = document.querySelectorAll('input[name="bgBlur"]');
+            blurInputs.forEach(input => {
+                input.checked = input.value === bg.blur;
             });
             const solidColorInput = document.getElementById('bgSolidColor');
             const solidColorText = document.getElementById('bgSolidColorText');
@@ -924,6 +949,47 @@
             }, 3000);
         }
 
+        function setupBulkIconRow(row) {
+            const iconInput = row.querySelector('.bulk-input-icon');
+            const uploadBtn = row.querySelector('.bulk-icon-upload');
+            const fileInput = row.querySelector('.bulk-icon-file');
+            const preview = row.querySelector('.bulk-icon-preview');
+            if (!iconInput || !preview) return;
+            function updatePreview() {
+                const value = iconInput.value.trim();
+                if (!value) {
+                    preview.style.backgroundImage = '';
+                    preview.classList.add('bulk-icon-empty');
+                } else {
+                    preview.style.backgroundImage = "url('" + value + "')";
+                    preview.classList.remove('bulk-icon-empty');
+                }
+            }
+            iconInput.addEventListener('input', updatePreview);
+            updatePreview();
+            if (uploadBtn && fileInput) {
+                uploadBtn.addEventListener('click', function() {
+                    fileInput.click();
+                });
+                fileInput.addEventListener('change', function(e) {
+                    const file = e.target.files[0];
+                    if (!file) return;
+                    if (file.size > MAX_ICON_SIZE) {
+                        showStatus('图标文件过大，请选择小于 200KB 的图片', 'error');
+                        fileInput.value = '';
+                        return;
+                    }
+                    const reader = new FileReader();
+                    reader.onload = function(ev) {
+                        iconInput.value = ev.target.result;
+                        updatePreview();
+                        showStatus('图标已载入，如为新应用请继续保存到应用列表', 'success');
+                    };
+                    reader.readAsDataURL(file);
+                });
+            }
+        }
+
         function addBulkRow() {
             const tbody = document.getElementById('bulk-table-body');
             if (!tbody) return;
@@ -932,10 +998,18 @@
                 <td><input type="text" class="bulk-input-name" placeholder="应用名称"></td>
                 <td><input type="text" class="bulk-input-external" placeholder="https://"></td>
                 <td><input type="text" class="bulk-input-internal" placeholder="http://"></td>
-                <td><input type="text" class="bulk-input-icon" placeholder="img/png/Edge.svg"></td>
+                <td>
+                    <div class="bulk-icon-wrapper">
+                        <input type="text" class="bulk-input-icon" placeholder="上传或填写图标 URL">
+                        <button type="button" class="bulk-icon-btn bulk-icon-upload">上传</button>
+                        <div class="bulk-icon-preview bulk-icon-empty"></div>
+                        <input type="file" class="bulk-icon-file" accept="image/*" style="display:none">
+                    </div>
+                </td>
                 <td><button type="button" class="delete-row-btn" onclick="deleteBulkRow(this)">删除</button></td>
             `;
             tbody.appendChild(tr);
+            setupBulkIconRow(tr);
         }
 
         function deleteBulkRow(button) {
@@ -1047,6 +1121,36 @@
             }
         }
 
+        const MAX_ICON_SIZE = 200 * 1024;
+
+        function setupCustomIconUpload() {
+            const fileInput = document.getElementById('customIconFile');
+            if (!fileInput) return;
+            fileInput.addEventListener('change', function(e) {
+                const file = e.target.files[0];
+                if (!file) return;
+                if (file.size > MAX_ICON_SIZE) {
+                    showStatus('图标文件过大，请选择小于 200KB 的图片', 'error');
+                    fileInput.value = '';
+                    return;
+                }
+                const reader = new FileReader();
+                reader.onload = function(ev) {
+                    const iconInput = document.getElementById('appIcon');
+                    if (iconInput) {
+                        iconInput.value = ev.target.result;
+                    }
+                    if (config && Array.isArray(config.applications) && currentEditingIndex !== null) {
+                        config.applications[currentEditingIndex].icon = ev.target.result;
+                        saveConfig();
+                        renderApps();
+                    }
+                    showStatus('自定义图标已载入，如为新应用请继续点击保存', 'success');
+                };
+                reader.readAsDataURL(file);
+            });
+        }
+
         // 表单提交处理
         document.getElementById('appForm').addEventListener('submit', function(e) {
             e.preventDefault();
@@ -1081,6 +1185,7 @@
         document.addEventListener('DOMContentLoaded', function() {
             loadConfig();
             clearBulkTable();
+            setupCustomIconUpload();
             const modeInputs = document.querySelectorAll('input[name="bgMode"]');
             modeInputs.forEach(input => {
                 input.addEventListener('change', function() {
@@ -1089,6 +1194,15 @@
                     config.background.mode = this.value;
                     updateBackgroundVisibility();
                     updateBackgroundPreview();
+                    saveConfig();
+                });
+            });
+            const blurInputs = document.querySelectorAll('input[name="bgBlur"]');
+            blurInputs.forEach(input => {
+                input.addEventListener('change', function() {
+                    if (!config) return;
+                    ensureBackgroundConfig();
+                    config.background.blur = this.value;
                     saveConfig();
                 });
             });

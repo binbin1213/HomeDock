@@ -25,3 +25,8 @@ pnpm-debug.log*
 .env
 .env.*
 
+debug-issues.js
+fix-errors.js
+start-dev.sh
+apps-config.json
+.claude/

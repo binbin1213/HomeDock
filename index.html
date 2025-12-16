@@ -8,40 +8,78 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
     <link rel="shortcut icon" href="favicon.ico" />
     <link rel="stylesheet" type="text/css" href="css/style.css" />
-    <title>HomeDock</title></head>
+    <link rel="stylesheet" type="text/css" href="css/responsive.css" />
+    <link rel="stylesheet" type="text/css" href="css/drag-drop.css" />
+    <link rel="stylesheet" type="text/css" href="css/image-optimizer.css" />
+
+    <!-- 安全策略 -->
+    <meta http-equiv="Content-Security-Policy"
+          content="default-src 'self';
+                   style-src 'self' 'unsafe-inline';
+                   script-src 'self' 'unsafe-inline';
+                   img-src 'self' data: https: blob:;
+                   font-src 'self' data:;
+                   connect-src 'self' https://www.bing.com data:;
+                   base-uri 'self';
+                   form-action 'self';">
+
+    <!-- 性能优化 -->
+    <meta name="theme-color" content="#1c1c1c">
+    <meta name="color-scheme" content="dark light">
+
+    <title>HomeDock</title>
+  </head>
   
   <body>
     <div id="wrap">
-      <div id="kg-btn" class="">
-        <input class='tgl tgl-flip' id='qieh' type='checkbox' />
-        <label class='tgl-btn' data-tg-off='OFFICE' data-tg-on='HOME' for='qieh'></label>
-        <button id="edit-toggle-btn">编辑</button>
+      <div id="control-panel" class="control-panel">
+        <div class="mode-switcher">
+            <button class="switch-btn switch-btn-left active" data-mode="external">OFFICE</button>
+            <button class="switch-btn switch-btn-right" data-mode="internal">HOME</button>
+        </div>
+        <button id="edit-toggle-btn" class="edit-btn-new">
+            <span class="edit-icon">✏️</span>
+            <span class="edit-text">编辑</span>
+        </button>
       </div>
       <div id="top">
         <div id="logo">
-          <p></p><div class="type-js headline">
+          <div class="type-js headline">
           	<h1 class="text-js">Welcome</h1>
           </div>
 				</div>
 			</div>
+			<div id="logo-display">
+				<img id="search-engine-logo" src="img/baidu.svg" alt="Search Engine" />
+			</div>
 			<div id="search-container" style="margin-top: 0;">
-        <div id="current-engine-wrapper">
-          <img id="current-engine-icon" src="img/Googl.svg" alt="Google" />
-          <span id="current-engine-label">Google</span>
-        </div>
 				<div id="search-box">
-          <div id="engine-switch">
-            <button class="engine-pill" type="button" data-engine="google">Google</button>
-            <button class="engine-pill" type="button" data-engine="bing">Bing</button>
-            <button class="engine-pill" type="button" data-engine="baidu">百度</button>
+          <div id="search-engine-selector" class="search-engine-selector">
+            <span id="current-engine-label">百度</span>
+            <svg id="dropdown-arrow" class="dropdown-arrow" width="12" height="12" viewBox="0 0 12 12" fill="none">
+              <path d="M2 4L6 8L10 4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
           </div>
-					<input type="text" id="search-input" placeholder="输入搜索内容，按回车键搜索..." />
+          <div id="search-input-wrapper">
+				<input type="text" id="search-input" placeholder="输入搜索内容，按回车键搜索..." />
+          </div>
           <button id="change-wallpaper-btn" type="button">换一张</button>
           <select id="search-engine" style="display: none;">
 						<option value="google">Google</option>
 						<option value="bing">Bing</option>
-						<option value="baidu">百度</option>
+						<option value="baidu" selected>百度</option>
 					</select>
+          <div id="search-engine-dropdown" class="search-engine-dropdown">
+            <div class="dropdown-item" data-engine="google">
+              <span>Google</span>
+            </div>
+            <div class="dropdown-item" data-engine="bing">
+              <span>Bing</span>
+            </div>
+            <div class="dropdown-item" data-engine="baidu">
+              <span>百度</span>
+            </div>
+          </div>
 				</div>
 			</div>
 			<div id="main">
@@ -71,666 +109,160 @@
     </div>
   </body>
   
+  <!-- 模块化脚本加载 -->
   <script>
-    const APPS_PER_PAGE = 12;
-    let appsConfig = null;
-    let externalPageIndex = 0;
-    let internalPageIndex = 0;
-
-    const CONFIG_KEY = 'homedock-config';
-
-    async function loadAppsConfig() {
-      try {
-        const remote = await loadConfigFromServer();
-        if (remote) {
-          appsConfig = remote;
-          localStorage.setItem(CONFIG_KEY, JSON.stringify(appsConfig));
-        } else {
-          const localConfig = JSON.parse(localStorage.getItem(CONFIG_KEY)) || null;
-          let config = localConfig;
-          if (!config || !config.applications || !Array.isArray(config.applications)) {
-            const response = await fetch('apps-config.json');
-            config = await response.json();
-          }
-          if (!config.background) {
-            config.background = {
-              mode: 'wallpaper',
-              solidColor: '#202124',
-              gradientFrom: '#141e30',
-              gradientTo: '#243b55'
-            };
-          }
-          appsConfig = config;
-          localStorage.setItem(CONFIG_KEY, JSON.stringify(appsConfig));
-          saveConfigToServer(appsConfig).catch(() => {});
-        }
-        externalPageIndex = 0;
-        internalPageIndex = 0;
-        renderExternalApps();
-        renderInternalApps();
-        console.log('应用配置加载成功');
-        addRightClickEdit();
-        applyBackgroundFromConfig(false);
-      } catch (error) {
-        console.error('加载应用配置失败:', error);
-      }
-    }
-
-    async function loadConfigFromServer() {
-      try {
-        const resp = await fetch('/api/config', {
-          method: 'GET',
-          headers: {
-            'Accept': 'application/json'
-          }
-        });
-        if (!resp.ok) {
-          return null;
-        }
-        const data = await resp.json();
-        if (!data || !data.applications || !Array.isArray(data.applications)) {
-          return null;
-        }
-        if (!data.background) {
-          data.background = {
-            mode: 'wallpaper',
-            solidColor: '#202124',
-            gradientFrom: '#141e30',
-            gradientTo: '#243b55'
-          };
-        }
-        return data;
-      } catch (e) {
-        return null;
-      }
-    }
-
-    async function saveConfigToServer(config) {
-      try {
-        await fetch('/api/config', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify(config)
-        });
-      } catch (e) {
-      }
-    }
-
-    function renderExternalApps() {
-      const externalAppsList = document.getElementById('external-apps');
-      const nextBtn = document.getElementById('external-next-btn');
-      if (!externalAppsList) return;
-      externalAppsList.innerHTML = '';
-      if (!appsConfig || !Array.isArray(appsConfig.applications)) return;
-      const appsWithIndex = appsConfig.applications
-        .map((app, index) => ({ app, index }))
-        .filter(item => item.app.external_url);
-      const total = appsWithIndex.length;
-      const maxPage = Math.max(0, Math.ceil(total / APPS_PER_PAGE) - 1);
-      if (externalPageIndex > maxPage) {
-        externalPageIndex = 0;
-      }
-      const start = externalPageIndex * APPS_PER_PAGE;
-      const pageItems = appsWithIndex.slice(start, start + APPS_PER_PAGE);
-      pageItems.forEach(({ app, index }) => {
-        const li = document.createElement('li');
-        li.className = 'app-page-item';
-        const iconSrc = app.icon && app.icon.trim() ? app.icon : 'img/png/favicon.svg';
-        const target = app.external_url.startsWith('#') ? '_self' : '_blank';
-        li.innerHTML = `
-          <div class="app-item" data-app-index="${index}">
-            <a href="${app.external_url}" target="${target}">
-              <img class="shake" src="${iconSrc}" onerror="this.onerror=null;this.src='img/png/favicon.svg'" />
-              <strong>${app.name}</strong>
-            </a>
-            <button class="edit-btn icon-btn" onclick="editIcon(${index})" style="display: none;">✏</button>
-            <button class="icon-btn delete-btn" onclick="deleteApp(${index})" style="display: none;">×</button>
-          </div>
-        `;
-        externalAppsList.appendChild(li);
-      });
-      const addExternalLi = document.createElement('li');
-      addExternalLi.className = 'add-app-item';
-      addExternalLi.innerHTML = `
-        <div class="app-item add-app-item-inner" onclick="openAddApp('external')">
-          <strong>+ 添加应用</strong>
-        </div>
-      `;
-      externalAppsList.appendChild(addExternalLi);
-      if (nextBtn) {
-        nextBtn.classList.toggle('page-arrow-hidden', total <= APPS_PER_PAGE);
-      }
-    }
-
-    function renderInternalApps() {
-      const internalAppsList = document.getElementById('internal-apps');
-      const nextBtn = document.getElementById('internal-next-btn');
-      if (!internalAppsList) return;
-      internalAppsList.innerHTML = '';
-      if (!appsConfig || !Array.isArray(appsConfig.applications)) return;
-      const appsWithIndex = appsConfig.applications
-        .map((app, index) => ({ app, index }))
-        .filter(item => item.app.internal_url);
-      const total = appsWithIndex.length;
-      const maxPage = Math.max(0, Math.ceil(total / APPS_PER_PAGE) - 1);
-      if (internalPageIndex > maxPage) {
-        internalPageIndex = 0;
-      }
-      const start = internalPageIndex * APPS_PER_PAGE;
-      const pageItems = appsWithIndex.slice(start, start + APPS_PER_PAGE);
-      pageItems.forEach(({ app, index }) => {
-        const li = document.createElement('li');
-        li.className = 'app-page-item';
-        const iconSrc = app.icon && app.icon.trim() ? app.icon : 'img/png/favicon.svg';
-        const target = app.internal_url.startsWith('#') ? '_self' : '_blank';
-        li.innerHTML = `
-          <div class="app-item" data-app-index="${index}">
-            <a href="${app.internal_url}" target="${target}">
-              <img class="shake" src="${iconSrc}" onerror="this.onerror=null;this.src='img/png/favicon.svg'" />
-              <strong>${app.name}</strong>
-            </a>
-            <button class="edit-btn icon-btn" onclick="editIcon(${index})" style="display: none;">✏</button>
-            <button class="icon-btn delete-btn" onclick="deleteApp(${index})" style="display: none;">×</button>
-          </div>
-        `;
-        internalAppsList.appendChild(li);
-      });
-      const addInternalLi = document.createElement('li');
-      addInternalLi.className = 'add-app-item';
-      addInternalLi.innerHTML = `
-        <div class="app-item add-app-item-inner" onclick="openAddApp('internal')">
-          <strong>+ 添加应用</strong>
-        </div>
-      `;
-      internalAppsList.appendChild(addInternalLi);
-      if (nextBtn) {
-        nextBtn.classList.toggle('page-arrow-hidden', total <= APPS_PER_PAGE);
-      }
-    }
-
-    function setupAppToggle() {
-      const toggle = document.getElementById('qieh');
-      const externalContainer = document.getElementById('app');
-      const internalContainer = document.getElementById('app1');
-
-      if (!toggle || !externalContainer || !internalContainer) {
-        return;
-      }
-
-      const savedView = localStorage.getItem('homedock-app-view');
-      if (savedView === 'internal') {
-        toggle.checked = true;
-      } else if (savedView === 'external') {
-        toggle.checked = false;
-      }
-
-      function updateVisibility() {
-        if (toggle.checked) {
-          externalContainer.style.display = 'none';
-          internalContainer.style.display = 'block';
-        } else {
-          externalContainer.style.display = 'block';
-          internalContainer.style.display = 'none';
-        }
-      }
-
-      updateVisibility();
-
-      toggle.addEventListener('change', function () {
-        const view = toggle.checked ? 'internal' : 'external';
-        localStorage.setItem('homedock-app-view', view);
-        updateVisibility();
-      });
-    }
-
-    function setupPagingControls() {
-      const externalNext = document.getElementById('external-next-btn');
-      const internalNext = document.getElementById('internal-next-btn');
-      if (externalNext) {
-        externalNext.addEventListener('click', function () {
-          if (!appsConfig || !Array.isArray(appsConfig.applications)) return;
-          const total = appsConfig.applications.filter(app => app.external_url).length;
-          const maxPage = Math.max(0, Math.ceil(total / APPS_PER_PAGE) - 1);
-          externalPageIndex = externalPageIndex >= maxPage ? 0 : externalPageIndex + 1;
-          renderExternalApps();
-          addRightClickEdit();
-        });
-      }
-      if (internalNext) {
-        internalNext.addEventListener('click', function () {
-          if (!appsConfig || !Array.isArray(appsConfig.applications)) return;
-          const total = appsConfig.applications.filter(app => app.internal_url).length;
-          const maxPage = Math.max(0, Math.ceil(total / APPS_PER_PAGE) - 1);
-          internalPageIndex = internalPageIndex >= maxPage ? 0 : internalPageIndex + 1;
-          renderInternalApps();
-          addRightClickEdit();
-        });
-      }
-    }
-    
-    // 全局编辑模式状态
-    let editMode = false;
-    
-    // 右键编辑功能
-    function addRightClickEdit() {
-      // 监听所有应用图标的右键点击
-      document.querySelectorAll('.app-item a').forEach(link => {
-        link.addEventListener('contextmenu', function(e) {
-          e.preventDefault();
-          
-          if (!editMode) {
-            // 进入编辑模式
-            enterEditMode();
-          }
-        });
-      });
-    }
-    
-    // 进入编辑模式
-    function enterEditMode() {
-      editMode = true;
-      
-      // 添加编辑模式类名
-      document.body.classList.add('edit-mode');
-      
-      // 显示所有图标按钮
-      document.querySelectorAll('.icon-btn').forEach(btn => {
-        btn.style.display = 'inline-block';
-      });
-      
-      // 清除所有现有动画类
-      document.querySelectorAll('.shake, .edit-shake').forEach(element => {
-        element.classList.remove('shake', 'edit-shake');
-      });
-      
-      // 只对应用图标添加轻微抖动
-      document.querySelectorAll('.app-item img').forEach(img => {
-        img.classList.add('edit-shake');
-      });
-      
-      // 让编辑按钮也轻微抖动（与图标一致）
-      document.querySelectorAll('.edit-btn').forEach(btn => {
-        btn.classList.add('edit-shake');
-      });
-
-      const toggleBtn = document.getElementById('edit-toggle-btn');
-      if (toggleBtn) {
-        toggleBtn.textContent = '完成';
-      }
-    }
-    
-    // 退出编辑模式
-    function exitEditMode() {
-      editMode = false;
-      
-      // 移除编辑模式类名
-      document.body.classList.remove('edit-mode');
-      
-      // 隐藏所有图标按钮
-      document.querySelectorAll('.icon-btn').forEach(btn => {
-        btn.style.display = 'none';
-      });
-      
-      // 清除所有编辑模式动画类
-      document.querySelectorAll('.edit-shake').forEach(element => {
-        element.classList.remove('edit-shake');
-      });
-      
-      // 恢复应用图标的默认动画
-      document.querySelectorAll('.app-item img').forEach(img => {
-        img.classList.add('shake');
-      });
-
-      const toggleBtn = document.getElementById('edit-toggle-btn');
-      if (toggleBtn) {
-        toggleBtn.textContent = '编辑';
-      }
-    }
-    
-    // 点击空白区域退出编辑模式
-    function setupClickOutsideToExit() {
-      document.addEventListener('click', function(e) {
-        if (editMode && !e.target.closest('.app-item') && !e.target.closest('.edit-modal') && !e.target.closest('#edit-toggle-btn')) {
-          exitEditMode();
-        }
-      });
-    }
-
-    function setupEditToggleButton() {
-      const btn = document.getElementById('edit-toggle-btn');
-      if (!btn) {
-        return;
-      }
-
-      function updateText() {
-        btn.textContent = editMode ? '完成' : '编辑';
-      }
-
-      updateText();
-
-      btn.addEventListener('click', function(e) {
-        e.stopPropagation();
-        if (editMode) {
-          exitEditMode();
-        } else {
-          enterEditMode();
-        }
-        updateText();
-      });
-    }
-    
-    function openAddApp(targetType) {
-      const modal = document.getElementById('editModal');
-      document.getElementById('appName').value = '';
-      document.getElementById('externalUrl').value = targetType === 'external' ? '' : '';
-      document.getElementById('internalUrl').value = targetType === 'internal' ? '' : '';
-      document.getElementById('iconPath').value = '';
-      modal.dataset.appIndex = targetType === 'external' ? 'new-external' : 'new-internal';
-      modal.style.display = 'flex';
-    }
-    
-    function editIcon(appIndex) {
-      const currentConfig = JSON.parse(localStorage.getItem(CONFIG_KEY)) || null;
-      let app;
-      
-      if (currentConfig && currentConfig.applications[appIndex]) {
-        app = currentConfig.applications[appIndex];
-      } else {
-        // 如果没有缓存的配置，暂时使用服务器配置
-        fetch('apps-config.json')
-          .then(response => response.json())
-          .then(config => {
-            app = config.applications[appIndex];
-            showEditModal(app, appIndex);
-          })
-          .catch(error => {
-            console.error('获取配置失败:', error);
-            alert('获取应用配置失败');
-          });
-        return;
-      }
-      
-      showEditModal(app, appIndex);
-    }
-    
-    // 显示编辑模态框
-    function showEditModal(app, appIndex) {
-      // 填充表单数据
-      document.getElementById('appName').value = app.name || '';
-      document.getElementById('externalUrl').value = app.external_url || '';
-      document.getElementById('internalUrl').value = app.internal_url || '';
-      document.getElementById('iconPath').value = app.icon || '';
-      
-      // 显示模态框
-      document.getElementById('editModal').style.display = 'flex';
-      
-      // 保存应用索引以便保存时使用
-      document.getElementById('editModal').dataset.appIndex = appIndex;
-    }
-    
-    function saveEditedApp() {
-      const modal = document.getElementById('editModal');
-      const appIndexValue = modal.dataset.appIndex;
-      const form = document.getElementById('editForm');
-      const formData = new FormData(form);
-      
-      const currentConfig = JSON.parse(localStorage.getItem(CONFIG_KEY)) || null;
-      if (!currentConfig || !Array.isArray(currentConfig.applications)) {
-        alert('配置尚未加载，请刷新页面后重试');
-        hideEditModal();
-        return;
-      }
-      const appData = {
-        name: formData.get('appName'),
-        external_url: formData.get('externalUrl'),
-        internal_url: formData.get('internalUrl'),
-        icon: formData.get('iconPath')
+    if (typeof window.NotificationUtils === 'undefined') {
+      window.NotificationUtils = {
+        showSuccess: function() { return null; },
+        showError: function() { return null; },
+        showWarning: function() { return null; },
+        showInfo: function() { return null; },
+        hideStatic: function() { return null; },
+        clearStatic: function() { return null; },
+        setSilentMode: function() {},
+        isSilentMode: function() { return true; }
       };
-      if (appIndexValue === 'new-external' || appIndexValue === 'new-internal') {
-        currentConfig.applications.push(appData);
-      } else {
-        const appIndex = parseInt(appIndexValue, 10);
-        if (isNaN(appIndex) || !currentConfig.applications[appIndex]) {
-          alert('应用不存在，请刷新页面后重试');
-          hideEditModal();
-          return;
-        }
-        const app = currentConfig.applications[appIndex];
-        app.name = appData.name;
-        app.external_url = appData.external_url;
-        app.internal_url = appData.internal_url;
-        app.icon = appData.icon;
-      }
-          localStorage.setItem(CONFIG_KEY, JSON.stringify(currentConfig));
-      location.reload();
-      hideEditModal();
     }
-    
-    // 隐藏编辑模态框
-    function hideEditModal() {
-      document.getElementById('editModal').style.display = 'none';
-    }
-    
-    // 删除应用功能（直接删除，无确认）
-    function deleteApp(appIndex) {
-      const currentConfig = JSON.parse(localStorage.getItem(CONFIG_KEY)) || null;
-      if (currentConfig) {
-        currentConfig.applications.splice(appIndex, 1);
-        localStorage.setItem(CONFIG_KEY, JSON.stringify(currentConfig));
-        location.reload(); // 刷新页面
-      } else {
-        // 如果没有缓存的配置，暂时使用服务器配置
-        fetch('apps-config.json')
-          .then(response => response.json())
-          .then(config => {
-            config.applications.splice(appIndex, 1);
-            alert('请手动删除 apps-config.json 文件中对应的应用条目，然后刷新页面');
-          })
-          .catch(error => {
-            console.error('删除应用失败:', error);
-            alert('删除应用失败');
-          });
-      }
-    }
-    
-    // 设置模态框事件监听器
-    function setupModalEvents() {
-      // 关闭按钮
-      document.querySelector('.edit-modal-close').addEventListener('click', hideEditModal);
-      
-      // 取消按钮
-      document.querySelector('.btn-cancel').addEventListener('click', hideEditModal);
-      
-      // 表单提交
-      document.getElementById('editForm').addEventListener('submit', function(e) {
-        e.preventDefault();
-        saveEditedApp();
-      });
-      
-      // 点击模态框背景关闭
-      document.getElementById('editModal').addEventListener('click', function(e) {
-        if (e.target === this) {
-          hideEditModal();
-        }
-      });
-    }
-    
-    // 设置搜索引擎图标显示
-    function setupEngineDisplay() {
-      const searchEngine = document.getElementById('search-engine');
-      const currentEngineIcon = document.getElementById('current-engine-icon');
-      const currentEngineLabel = document.getElementById('current-engine-label');
-      const searchBox = document.getElementById('search-box');
-      const enginePills = document.querySelectorAll('.engine-pill');
+  </script>
+  <script src="js/utils/helpers.js"></script>
+  <script src="js/preset-icons.js"></script>
+  <script src="js/utils/notification.js"></script>
+  <script src="js/utils/service-worker.js"></script>
+  <script src="js/utils/image-optimizer.js"></script>
+  <script src="js/modules/config-manager.js"></script>
+  <script src="js/modules/app-renderer.js"></script>
+  <script src="js/modules/ui-controller.js"></script>
+  <script src="js/modules/search-engine.js"></script>
 
-      console.log('setupEngineDisplay called');
-      console.log('searchEngine:', searchEngine);
-      console.log('currentEngineIcon:', currentEngineIcon);
-      
-      if (!searchEngine || !currentEngineIcon || !currentEngineLabel || !searchBox || !enginePills.length) {
-        console.error('搜索框或图标元素未找到');
-        return;
-      }
-      
-      // 立即设置初始图标
-      function updateIcon() {
-        const selectedValue = searchEngine.value;
-        let iconSrc = '';
-        let altText = '';
-        let labelText = '';
-        
-        if (selectedValue === 'google') {
-          iconSrc = 'img/google-official.svg';
-          altText = 'Google';
-          labelText = '';
-        } else if (selectedValue === 'bing') {
-          iconSrc = 'img/Bing.svg';
-          altText = 'Bing';
-          labelText = 'Bing';
-        } else if (selectedValue === 'baidu') {
-          iconSrc = 'img/baidu.svg';
-          altText = 'Baidu';
-          labelText = '';
-        }
-        
-        console.log('准备设置图标:', iconSrc);
-        currentEngineIcon.src = iconSrc;
-        currentEngineIcon.alt = altText;
-        currentEngineLabel.textContent = labelText;
-        console.log('图标已更新为:', iconSrc);
+  <!-- 主应用初始化脚本 -->
+  <script>
+    /**
+     * 应用初始化
+     */
+    document.addEventListener('DOMContentLoaded', async function() {
+      try {
+        console.log('🚀 HomeDock 初始化开始...');
 
-        searchBox.classList.remove('engine-google', 'engine-bing', 'engine-baidu');
-        if (selectedValue === 'google') {
-          searchBox.classList.add('engine-google');
-        } else if (selectedValue === 'bing') {
-          searchBox.classList.add('engine-bing');
-        } else if (selectedValue === 'baidu') {
-          searchBox.classList.add('engine-baidu');
+        // 等待模块加载
+        const requiredModules = [
+          'Helpers',
+          'NotificationUtils',
+          'ConfigManager',
+          'AppRenderer',
+          'UIManager',
+          'SearchEngine'
+        ];
+
+        console.log('⏳ 等待模块加载...');
+        await waitForModules(requiredModules, 5000);
+        console.log('✅ 所有模块加载完成');
+
+        // 加载配置
+        console.log('⚙️ 正在加载配置...');
+        if (typeof window.ConfigManager !== 'undefined') {
+          await window.ConfigManager.loadConfigWithRetry();
+          console.log('✅ 配置加载完成');
         }
 
-        enginePills.forEach(function (btn) {
-          if (btn.dataset.engine === selectedValue) {
-            btn.classList.add('active');
-          } else {
-            btn.classList.remove('active');
+        // 初始化UI组件
+        console.log('🎨 正在初始化UI组件...');
+        if (typeof window.AppRenderer !== 'undefined') {
+          window.AppRenderer.refresh();
+        }
+
+        if (typeof window.UIManager !== 'undefined') {
+          window.UIManager.setupSearchFunction();
+        }
+
+        // 设置壁纸更换按钮
+        if (typeof window.Helpers !== 'undefined') {
+          const changeWallpaperBtn = window.Helpers.DOM.find('#change-wallpaper-btn');
+          if (changeWallpaperBtn && typeof window.SearchEngine !== 'undefined') {
+            window.Helpers.DOM.on(changeWallpaperBtn, 'click', () => {
+              window.SearchEngine.changeWallpaper();
+            });
           }
-        });
-      }
-      
-      // 立即设置初始图标
-      updateIcon();
-
-      enginePills.forEach(function (btn) {
-        btn.addEventListener('click', function () {
-          var value = btn.dataset.engine;
-          if (searchEngine.value !== value) {
-            searchEngine.value = value;
-            updateIcon();
-          }
-        });
-      });
-    }
-    
-    // 设置搜索功能
-    function setupSearchFunction() {
-      const searchInput = document.getElementById('search-input');
-      
-      // 输入框回车事件
-      searchInput.addEventListener('keypress', function(e) {
-        if (e.key === 'Enter') {
-          performSearch();
         }
+
+        // 应用背景配置
+        console.log('🖼️ 正在应用背景配置...');
+        if (typeof window.SearchEngine !== 'undefined') {
+          window.SearchEngine.applyBackgroundFromConfig();
+        }
+
+        // 性能优化
+        if (typeof window.SearchEngine !== 'undefined') {
+          window.SearchEngine.optimizeBackgroundPerformance();
+        }
+
+        // 预加载下一张壁纸
+        setTimeout(() => {
+          if (typeof window.SearchEngine !== 'undefined') {
+            window.SearchEngine.preloadNextWallpaper();
+          }
+        }, 3000);
+
+        console.log('🎉 HomeDock 初始化完成');
+
+      } catch (error) {
+        console.error('❌ 应用初始化失败:', error);
+
+        console.error('应用初始化失败:', error.message);
+
+        // 显示缺失的模块
+        const requiredModules = [
+          'Helpers',
+          'NotificationUtils',
+          'ConfigManager',
+          'AppRenderer',
+          'UIManager',
+          'SearchEngine'
+        ];
+
+        const missing = requiredModules.filter(name => typeof window[name] === 'undefined');
+        if (missing.length > 0) {
+          console.error('缺失的模块:', missing);
+        }
+      }
+    });
+
+    /**
+     * 等待模块加载
+     */
+    function waitForModules(moduleNames, timeout = 10000) {
+      return new Promise((resolve, reject) => {
+        const startTime = Date.now();
+
+        function checkModules() {
+          const loaded = moduleNames.every(name => typeof window[name] !== 'undefined');
+
+          if (loaded) {
+            resolve();
+            return;
+          }
+
+          if (Date.now() - startTime > timeout) {
+            const missing = moduleNames.filter(name => typeof window[name] === 'undefined');
+            reject(new Error(`等待模块超时: ${missing.join(', ')}`));
+            return;
+          }
+
+          setTimeout(checkModules, 100);
+        }
+
+        checkModules();
       });
     }
-    
-    // 执行搜索
-    function performSearch() {
-      const searchInput = document.getElementById('search-input');
-      const searchEngine = document.getElementById('search-engine');
-      const query = searchInput.value.trim();
-      
-      if (!query) {
-        alert('请输入搜索内容！');
-        return;
-      }
-      
-      const currentEngine = searchEngine.value;
-      let searchUrl;
-      
-      if (currentEngine === 'google') {
-        searchUrl = `https://www.google.com/search?q=${encodeURIComponent(query)}`;
-      } else if (currentEngine === 'bing') {
-        searchUrl = `https://cn.bing.com/search?q=${encodeURIComponent(query)}`;
-      } else if (currentEngine === 'baidu') {
-        searchUrl = `https://www.baidu.com/s?wd=${encodeURIComponent(query)}`;
-      }
-      
-      // 在新窗口打开搜索结果
-      window.open(searchUrl, '_blank');
-    }
 
-    function setupBingBackground() {
-      const imageUrl = `/bing-wallpaper?ts=${Date.now()}`;
-      document.body.style.backgroundImage =
-        `linear-gradient(rgba(0, 0, 0, 0.35), rgba(0, 0, 0, 0.35)), url('${imageUrl}')`;
-      document.body.style.backgroundRepeat = 'no-repeat';
-      document.body.style.backgroundSize = 'cover';
-      document.body.style.backgroundPosition = 'center center';
-      document.body.style.backgroundAttachment = 'fixed';
-      document.body.style.backgroundColor = '#000000';
-    }
+    // 全局错误处理
+    window.addEventListener('error', function(e) {
+      console.error('全局错误:', e.error);
+    });
 
-    function applyBackgroundFromConfig(forceRefreshWallpaper) {
-      const changeWallpaperBtn = document.getElementById('change-wallpaper-btn');
-      if (!appsConfig || !appsConfig.background || !appsConfig.background.mode) {
-        if (changeWallpaperBtn) changeWallpaperBtn.style.display = '';
-        setupBingBackground();
-        return;
-      }
-      const bg = appsConfig.background;
-      if (bg.mode === 'wallpaper') {
-        if (changeWallpaperBtn) changeWallpaperBtn.style.display = '';
-        setupBingBackground();
-        return;
-      }
-      if (changeWallpaperBtn) changeWallpaperBtn.style.display = 'none';
-      if (bg.mode === 'solid') {
-        document.body.style.backgroundImage = 'none';
-        document.body.style.backgroundColor = bg.solidColor || '#202124';
-      } else if (bg.mode === 'gradient') {
-        const from = bg.gradientFrom || '#141e30';
-        const to = bg.gradientTo || '#243b55';
-        document.body.style.backgroundImage = `linear-gradient(135deg, ${from}, ${to})`;
-        document.body.style.backgroundColor = '#000000';
-      } else {
-        setupBingBackground();
-        if (changeWallpaperBtn) changeWallpaperBtn.style.display = '';
-      }
-      document.body.style.backgroundRepeat = 'no-repeat';
-      document.body.style.backgroundSize = 'cover';
-      document.body.style.backgroundPosition = 'center center';
-      document.body.style.backgroundAttachment = 'fixed';
-    }
-    
-    document.addEventListener('DOMContentLoaded', function() {
-      loadAppsConfig();
-      setupAppToggle();
-      setupModalEvents();
-      setupClickOutsideToExit();
-      setupEditToggleButton();
-      setupSearchFunction();
-      setupEngineDisplay();
-      setupBingBackground();
-      setupPagingControls();
-
-      const changeWallpaperBtn = document.getElementById('change-wallpaper-btn');
-      if (changeWallpaperBtn) {
-        changeWallpaperBtn.addEventListener('click', function () {
-          applyBackgroundFromConfig(true);
-        });
-      }
+    // 未处理的Promise拒绝
+    window.addEventListener('unhandledrejection', function(e) {
+      console.error('未处理的Promise拒绝:', e.reason);
+      e.preventDefault();
     });
   </script>
 
@@ -755,6 +287,10 @@
         <div class="form-group">
           <label for="iconPath">图标路径：</label>
           <input type="text" id="iconPath" name="iconPath">
+          <button type="button" id="iconPickerToggle" class="icon-picker-toggle">浏览预设图标</button>
+          <div id="iconPicker" class="icon-picker">
+            <div class="icon-picker-grid" id="iconPickerGrid"></div>
+          </div>
         </div>
         <div class="form-actions">
           <button type="submit" class="btn-save">保存</button>

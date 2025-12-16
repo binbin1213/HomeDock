@@ -1,0 +1,131 @@
+/**
+ * 拖拽排序功能样式
+ */
+
+/* 拖拽状态样式 */
+.app-page-item {
+  transition: all 0.3s ease;
+  cursor: grab;
+}
+
+.app-page-item.dragging {
+  opacity: 0.5;
+  transform: rotate(5deg);
+  cursor: grabbing;
+  z-index: 1000;
+}
+
+/* 拖拽占位符 */
+.app-page-item.drag-over {
+  transform: scale(1.05);
+  border: 2px dashed rgba(255, 255, 255, 0.5);
+}
+
+/* 拖拽指示器 */
+.drag-indicator {
+  height: 2px;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.8), transparent);
+  margin: 5px 0;
+  opacity: 0;
+  transition: opacity 0.2s;
+}
+
+.drag-indicator.active {
+  opacity: 1;
+}
+
+/* 编辑模式下的拖拽提示 */
+body.edit-mode .app-item {
+  cursor: grab;
+}
+
+body.edit-mode .app-item:active {
+  cursor: grabbing;
+}
+
+/* 拖拽时的视觉反馈 */
+body.edit-mode .app-page-item:hover {
+  transform: none;
+  box-shadow: none;
+}
+
+/* 移动端拖拽优化 */
+@media (max-width: 768px) {
+  .app-page-item {
+    touch-action: none; /* 防止滚动干扰 */
+  }
+
+  .app-page-item.dragging {
+    transform: scale(1.1) rotate(3deg);
+  }
+}
+
+/* 触摸设备拖拽支持 */
+@media (pointer: coarse) {
+  .app-page-item {
+    touch-action: pan-y; /* 允许垂直滚动 */
+  }
+
+  body.edit-mode .app-page-item {
+    touch-action: none; /* 编辑模式下禁用默认触摸行为 */
+  }
+}
+
+/* 拖拽动画 */
+@keyframes dragPulse {
+  0%, 100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.05);
+  }
+}
+
+.app-page-item.dragging {
+  animation: dragPulse 1s ease-in-out infinite;
+}
+
+/* 拖拽结束动画 */
+@keyframes dropAnimation {
+  0% {
+    transform: scale(1.1) rotate(5deg);
+  }
+  50% {
+    transform: scale(0.9) rotate(-2deg);
+  }
+  100% {
+    transform: scale(1) rotate(0deg);
+  }
+}
+
+.app-page-item.drop-animation {
+  animation: dropAnimation 0.4s ease-out;
+}
+
+/* 禁用拖拽的状态 */
+.app-page-item.drag-disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+/* 排序模式指示器 */
+.sort-mode-indicator {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: rgba(0, 0, 0, 0.8);
+  color: white;
+  padding: 20px 30px;
+  border-radius: 10px;
+  font-size: 16px;
+  z-index: 10000;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+
+.sort-mode-indicator.show {
+  opacity: 1;
+}

@@ -2,14 +2,15 @@
 
 ## 一、项目整体概览
 
-- **项目名称**：HomeDock（浏览器标签标题见 `index.html:11`）
-- **项目类型**：纯静态 Web 起始页 / 应用导航页
+- **项目名称**：HomeDock（浏览器标签标题见 `index.html:30`）
+- **项目类型**：前端纯静态的 Web 起始页 / 应用导航页，配合可选的配置 API 实现持久化
 - **主要用途**：为 NAS、家庭服务器或 VPS 提供统一的 Web 入口，集中展示常用服务的外网 / 内网访问地址，并提供搜索入口。
 - **技术栈**：
 -  - 原生 `HTML + CSS + JavaScript`
--  - 应用配置存放在静态 JSON 文件 `apps-config.json` 中（`apps-config.json:1-75`）
+-  - 应用配置默认保存在静态 JSON 文件 `apps-config.json` 中，通过 `/api/config` 与浏览器 `localStorage["homedock-config"]` 统一管理
 
-项目为「零构建」静态站点：将整个 `web` 目录部署到任意静态 Web 服务器（Nginx、Apache、群晖 Web Station 等）即可运行。
+前端仍然是「零构建」静态站点：将整个 `web` 目录部署到任意静态 Web 服务器（Nginx、Apache、群晖 Web Station 等）即可运行；  
+是否使用「服务器端持久化」由是否提供 `/api/config` 接口决定（本地可用 `dev-server.py`，公网 / NAS 可自建后端或使用 Cloudflare Worker，见 `docs/DEPLOY_CLOUDFLARE.md`）。
 
 ---
 
@@ -18,12 +19,11 @@
 根目录：`/Users/binbin/Desktop/xiangmu/web`
 
 - `index.html`：主入口首页，负责
-  - 粒子背景渲染
-  - 搜索引擎选择与搜索跳转
-  - 应用列表（外网 / 内网）渲染与右键编辑模式  
-  见 `index.html:1-512`。
-- `admin.html`：独立的「应用配置管理」页面，通过列表+表单管理应用配置，见 `admin.html:1-538`。
-- `apps-config.json`：默认应用配置文件，包含应用名称、外部 URL、内部 URL 和图标地址，见 `apps-config.json:1-75`。
+-  - 搜索引擎选择与搜索跳转
+-  - 应用列表（外网 / 内网）渲染、分页和右键编辑模式  
+-  见 `index.html:1-255`、`js/modules/app-renderer.js:1-556`。
+- `admin.html`：独立的「应用配置管理」页面，通过卡片 + 表单 + 表格批量导入管理应用配置，并管理背景设置，见 `admin.html:1-1189`。
+- `apps-config.json`：默认应用配置文件，包含应用名称、外部 URL、内部 URL、图标地址和背景设置，见 `apps-config.json:1-120`。
 - `css/style.css`：全站样式：
   - 首页布局与响应式
   - 搜索框与编辑模态框样式
@@ -231,40 +231,51 @@
 
 ---
 
-## 五、数据流与状态管理
+## 五、数据流与部署模式
 
-项目的数据流可以概括为「静态默认配置 + 浏览器本地覆盖」。
+项目的数据流可以概括为「统一配置管理（ConfigManager）+ 浏览器本地缓存 + 可选服务器持久化」。
 
 ### 5.1 默认配置
 
-- 默认配置来源：`apps-config.json` 静态文件，见 `apps-config.json:1-75`。
-- 部署后，如需统一修改默认配置，一般通过手动编辑该文件，或后端配置更新流程完成。
+- 默认配置来源：`apps-config.json` 静态文件，见 `apps-config.json:1-120`。
+- 部署后，如需统一修改默认配置，一般通过手动编辑该文件，或通过后台页面修改后再将结果同步到服务器 / 版本库。
 
-### 5.2 本地覆盖配置
+### 5.2 本地缓存配置
 
-首页与后台页面分别使用不同的 LocalStorage key：
+- 前台首页和后台页面统一使用 `localStorage["homedock-config"]` 作为浏览器本地缓存，见：
+  - `js/modules/config-manager.js:7-8, 187-189`
+  - `admin.html:686-691, 1025-1028`
+- 读取流程（`ConfigManager.loadConfigWithRetry()`）：
+  - 首选：`GET /api/config` 返回的服务器配置；
+  - 其次：本地缓存 `localStorage["homedock-config"]`；
+  - 最后：静态文件 `apps-config.json`。
 
-- 首页：
-- key：`homedock-config`
-  - 使用位置：`editIcon`、`saveEditedApp`、`deleteApp` 等，见 `index.html:308-365,379-383`。
+### 5.3 服务器端持久化
 
-- 管理后台：
-  - key：`apps-config`
-  - 使用位置：`saveConfig()`，见 `admin.html:468-474`。
+根据部署方式不同，`/api/config` 背后可以有不同的实现，但前端协议完全一致：
 
-这导致：
+- 本地开发 / 自建服务器：
+  - 使用 `dev-server.py` 提供 `/api/config` 和 `/bing-wallpaper`，见 `dev-server.py:50-115,145-188`；
+  - 配置真实写入项目根目录的 `apps-config.json`，所有访问该服务器的设备共享这份配置。
 
-- 在 `admin.html` 中修改保存配置 → 更新 `localStorage.apps-config`。
-- 在 `index.html` 中编辑保存配置 → 更新 `localStorage.homedock-config`。
+- NAS 部署：
+  - 可以直接运行 `dev-server.py`，把 `apps-config.json` 放在 NAS 的共享目录；
+  - 也可以通过 NAS 自带的 Web 服务器实现一个等价的 `/api/config`（读写同一个 JSON 文件）。
 
-两者互不覆盖，也不自动同步。不同页面以及不同浏览器之间会看到不同的配置结果。
+- Cloudflare / 其它云端部署：
+  - 使用 Cloudflare Worker + KV，把 `/api/config` 映射到 KV 存储，配置存放在 Cloudflare 边缘节点上；
+  - 详细见 `docs/DEPLOY_CLOUDFLARE.md`。
 
-### 5.3 短期运行时状态
+### 5.4 用户自定义图标与背景
 
-- `editMode`：控制是否处于编辑模式，影响样式和按钮展示，见 `index.html:231,248-297`。
-- 当前正编辑的应用索引：
-  - 首页：挂在模态框 DOM 的 `data-appIndex` 属性上，见 `index.html:345-346`。
-  - 后台：使用全局变量 `currentEditingIndex`，见 `admin.html:375-376,440-451`。
+- 后台页面支持：
+  - 使用预设图标（`js/preset-icons.js`）；
+  - 使用任意 HTTPS 图标 URL；
+  - 上传本地图片，自动转换为 Data URL 并写入配置（`admin.html:670-680,1035-1061`）。
+- 首页在渲染应用和应用背景时严格遵守 CSP 策略：
+  - `img-src 'self' data: https: blob:;` 允许本地图片、Data URL、自建 / 第三方 HTTPS 图标以及将来的 `blob:` 源，见 `index.html:15-24`。
+
+整体来看，HomeDock 在保持前端静态、可直接放在任意 Web 空间的同时，通过统一的配置管理器和 `/api/config` 协议，把「本地浏览器缓存」「服务器 JSON 文件」「Cloudflare KV」等不同持久化方案统一抽象成了一套一致的数据流。
 
 ---
 
