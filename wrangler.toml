@@ -1,4 +1,4 @@
-name = "homedock-home"
+name = "homedock"
 main = "cloudflare-worker.js"
 compatibility_date = "2025-01-15"
 
