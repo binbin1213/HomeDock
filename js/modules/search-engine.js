@@ -79,7 +79,7 @@ class SearchEngine {
    */
   setupBingBackground(forceRefresh = false) {
     const timestamp = forceRefresh ? Date.now() : '';
-    const imageUrl = `/bing-wallpaper?ts=${timestamp}`;
+    const imageUrl = this.resolveWallpaperUrl(`ts=${timestamp}`);
 
     console.log('🖼️ Setting up Bing wallpaper:', imageUrl);
 
@@ -244,7 +244,6 @@ class SearchEngine {
    * 预加载下一张壁纸
    */
   preloadNextWallpaper() {
-    // 预加载机制，提升用户体验
     try {
       const preloadImg = new Image();
       preloadImg.onload = () => {
@@ -253,17 +252,34 @@ class SearchEngine {
       preloadImg.onerror = () => {
         console.warn('⚠️ 壁纸预加载失败');
       };
-      preloadImg.src = '/bing-wallpaper?preload=true&ts=' + Date.now();
+      preloadImg.src = this.resolveWallpaperUrl(
+        'preload=true&ts=' + Date.now()
+      );
     } catch (error) {
       console.warn('⚠️ 壁纸预加载出错:', error);
+    }
+  }
+
+  resolveWallpaperUrl(query) {
+    try {
+      const { origin, hostname } = window.location || {};
+      if (hostname && hostname.endsWith('.pages.dev')) {
+        return `https://homedock.piaozhitian.workers.dev/bing-wallpaper?${query}`;
+      }
+      if (origin && origin.startsWith('http')) {
+        return origin.replace(/\/+$/, '') + `/bing-wallpaper?${query}`;
+      }
+      return `/bing-wallpaper?${query}`;
+    } catch (e) {
+      console.warn('壁纸地址解析失败，回退到相对路径', e);
+      return `/bing-wallpaper?${query}`;
     }
   }
 
   /**
    * 设置壁纸定时切换
    */
-  setupWallpaperAutoChange(interval = 3600000) { // 默认1小时
-    // 可选功能：自动更换壁纸
+  setupWallpaperAutoChange(interval = 3600000) {
     const autoChangeKey = 'homedock-auto-change-wallpaper';
     const enabled = Helpers.Storage.get(autoChangeKey, false);
 
@@ -278,14 +294,11 @@ class SearchEngine {
    * 背景性能优化
    */
   optimizeBackgroundPerformance() {
-    // 使用 will-change 属性优化背景性能
     document.body.style.willChange = 'background-image';
 
-    // 检测设备性能
     const isLowPerformance = this.detectLowPerformanceDevice();
 
     if (isLowPerformance) {
-      // 低性能设备使用静态背景
       const config = this.configManager.getCurrentConfig();
       if (config && config.background && config.background.mode === 'wallpaper') {
         this.applySolidBackground('#202124');
@@ -297,24 +310,27 @@ class SearchEngine {
    * 检测低性能设备
    */
   detectLowPerformanceDevice() {
-    // 简单的性能检测
     const memory = navigator.deviceMemory || 4;
-    const connection = navigator.connection || navigator.mozConnection || navigator.webkitConnection;
+    const connection =
+      navigator.connection ||
+      navigator.mozConnection ||
+      navigator.webkitConnection;
 
-    // 内存小于2GB或网络较慢时认为是低性能设备
-    return memory < 2 || (connection && connection.effectiveType &&
-           ['slow-2g', '2g', '3g'].includes(connection.effectiveType));
+    return (
+      memory < 2 ||
+      (connection &&
+        connection.effectiveType &&
+        ['slow-2g', '2g', '3g'].includes(connection.effectiveType))
+    );
   }
 
   /**
    * 设置背景缓存策略
    */
   setupBackgroundCaching() {
-    // 使用Service Worker缓存壁纸
     if ('serviceWorker' in navigator) {
-      navigator.serviceWorker.ready.then(registration => {
-        // 预缓存常用壁纸
-        registration.addEventListener('message', event => {
+      navigator.serviceWorker.ready.then((registration) => {
+        registration.addEventListener('message', (event) => {
           if (event.data.type === 'CACHE_UPDATED') {
             console.log('Background cache updated');
           }
@@ -329,10 +345,13 @@ class SearchEngine {
   applyBackgroundBlur(blurLevel) {
     const body = document.body;
 
-    // 移除现有的模糊效果类
-    body.classList.remove('bg-blur-none', 'bg-blur-light', 'bg-blur-medium', 'bg-blur-heavy');
+    body.classList.remove(
+      'bg-blur-none',
+      'bg-blur-light',
+      'bg-blur-medium',
+      'bg-blur-heavy'
+    );
 
-    // 添加新的模糊效果类
     switch (blurLevel) {
       case 'none':
         body.classList.add('bg-blur-none');

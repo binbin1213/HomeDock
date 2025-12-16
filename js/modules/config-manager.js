@@ -5,8 +5,29 @@
 class ConfigManager {
   constructor() {
     this.CONFIG_KEY = 'homedock-config';
-    this.API_ENDPOINT = '/api/config';
+    this.API_ENDPOINT = this.resolveApiEndpoint();
     this.cachedConfig = null;
+  }
+
+  resolveApiEndpoint() {
+    try {
+      const { origin, hostname } = window.location || {};
+
+      // 当托管在 Cloudflare Pages（*.pages.dev）时，指向已部署的 workers.dev 域名
+      if (hostname && hostname.endsWith('.pages.dev')) {
+        return 'https://homedock.piaozhitian.workers.dev/api/config';
+      }
+
+      // 默认：相对当前站点的 /api/config（适用于本地 dev-server 和自定义域）
+      if (origin && origin.startsWith('http')) {
+        return origin.replace(/\/+$/, '') + '/api/config';
+      }
+
+      return '/api/config';
+    } catch (e) {
+      console.warn('API 端点解析失败，回退到默认 /api/config', e);
+      return '/api/config';
+    }
   }
 
   /**

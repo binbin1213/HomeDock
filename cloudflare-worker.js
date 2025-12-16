@@ -1,19 +1,48 @@
+const CORS_HEADERS = {
+  "Access-Control-Allow-Origin": "*",
+  "Access-Control-Allow-Methods": "GET,POST,PUT,OPTIONS",
+  "Access-Control-Allow-Headers": "Content-Type",
+};
+
+function withCorsHeaders(headers = {}) {
+  return { ...headers, ...CORS_HEADERS };
+}
+
+function handleCorsOptions() {
+  return new Response(null, { status: 204, headers: withCorsHeaders() });
+}
+
 export default {
   async fetch(request, env) {
     const url = new URL(request.url);
+
     if (url.pathname === "/api/config") {
+      if (request.method === "OPTIONS") {
+        return handleCorsOptions();
+      }
       if (request.method === "GET") {
         return handleGetConfig(env);
       }
       if (request.method === "POST" || request.method === "PUT") {
         return handleSaveConfig(request, env);
       }
-      return new Response("Method Not Allowed", { status: 405 });
+      return new Response("Method Not Allowed", {
+        status: 405,
+        headers: withCorsHeaders(),
+      });
     }
+
     if (url.pathname.startsWith("/bing-wallpaper")) {
+      if (request.method === "OPTIONS") {
+        return handleCorsOptions();
+      }
       return handleBingWallpaper();
     }
-    return new Response("Not Found", { status: 404 });
+
+    return new Response("Not Found", {
+      status: 404,
+      headers: withCorsHeaders(),
+    });
   },
 };
 
@@ -23,7 +52,9 @@ async function handleGetConfig(env) {
     if (value && typeof value === "object") {
       return new Response(JSON.stringify(value), {
         status: 200,
-        headers: { "Content-Type": "application/json; charset=utf-8" },
+        headers: withCorsHeaders({
+          "Content-Type": "application/json; charset=utf-8",
+        }),
       });
     }
     const fallback = {
@@ -37,10 +68,15 @@ async function handleGetConfig(env) {
     };
     return new Response(JSON.stringify(fallback), {
       status: 200,
-      headers: { "Content-Type": "application/json; charset=utf-8" },
+      headers: withCorsHeaders({
+        "Content-Type": "application/json; charset=utf-8",
+      }),
     });
   } catch (err) {
-    return new Response("Failed to load config", { status: 500 });
+    return new Response("Failed to load config", {
+      status: 500,
+      headers: withCorsHeaders(),
+    });
   }
 }
 
@@ -48,12 +84,21 @@ async function handleSaveConfig(request, env) {
   try {
     const body = await request.json();
     if (!body || typeof body !== "object") {
-      return new Response("Invalid config", { status: 400 });
+      return new Response("Invalid config", {
+        status: 400,
+        headers: withCorsHeaders(),
+      });
     }
     await env.HOMEDOCK_CONFIG.put("config", JSON.stringify(body));
-    return new Response("OK", { status: 200 });
+    return new Response("OK", {
+      status: 200,
+      headers: withCorsHeaders(),
+    });
   } catch (err) {
-    return new Response("Failed to save config", { status: 500 });
+    return new Response("Failed to save config", {
+      status: 500,
+      headers: withCorsHeaders(),
+    });
   }
 }
 
@@ -63,17 +108,26 @@ async function handleBingWallpaper() {
   try {
     const resp = await fetch(apiUrl, { cf: { cacheTtl: 0 } });
     if (!resp.ok) {
-      return new Response("Failed to fetch Bing metadata", { status: 502 });
+      return new Response("Failed to fetch Bing metadata", {
+        status: 502,
+        headers: withCorsHeaders(),
+      });
     }
     const data = await resp.json();
     const images = data && Array.isArray(data.images) ? data.images : [];
     if (!images.length) {
-      return new Response("No images in Bing response", { status: 502 });
+      return new Response("No images in Bing response", {
+        status: 502,
+        headers: withCorsHeaders(),
+      });
     }
     const choice = images[Math.floor(Math.random() * images.length)];
     const imageUrl = "https://www.bing.com" + choice.url;
     return Response.redirect(imageUrl, 302);
   } catch (err) {
-    return new Response("Failed to fetch Bing wallpaper", { status: 500 });
+    return new Response("Failed to fetch Bing wallpaper", {
+      status: 500,
+      headers: withCorsHeaders(),
+    });
   }
 }
