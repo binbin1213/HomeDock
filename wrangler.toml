@@ -4,11 +4,11 @@ compatibility_date = "2025-01-15"
 
 workers_dev = true
 
-routes = [
-  "https://example.com/api/*",
-  "https://example.com/bing-wallpaper*"
-]
+# routes = [
+#  "https://example.com/api/*",
+#  "https://example.com/bing-wallpaper*"
+# ]
 
 [[kv_namespaces]]
 binding = "HOMEDOCK_CONFIG"
-id = "REPLACE_WITH_KV_NAMESPACE_ID"
+id = "c7c6bf3bc62c4f3a85e8d8cc0b8448d3"
