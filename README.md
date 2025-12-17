@@ -10,7 +10,7 @@ HomeDock 是一个为 NAS / 家庭服务器 / VPS 设计的「起始页 + 应用
 - 可选的 Cloudflare Worker + KV 云端配置存储，以及 NAS 自托管部署方案。
 
 整个项目以纯静态前端为核心，无需打包构建，直接部署 `web` 目录即可运行；  
-如需在本地 / NAS 上实现「多终端共享同一份配置」，可以配合轻量级 Python 后端 `dev-server.py` 使用。
+如需在本地环境模拟「多终端共享同一份配置」，可以配合轻量级 Python 后端 `dev-server.py` 使用；生产环境推荐使用 Cloudflare Worker 或官方 Docker 镜像部署。
 
 ---
 
@@ -179,35 +179,25 @@ HomeDock 是一个为 NAS / 家庭服务器 / VPS 设计的「起始页 + 应用
 ---
 
 ## 6. 部署方式概览
-
-HomeDock 支持三种主要部署方式：
-
-1. **Cloudflare Pages + Worker + KV（推荐生产使用）**  
-   - 静态页面部署到 Cloudflare Pages；  
-   - Worker 提供 `/api/config` 与 `/bing-wallpaper`；  
-   - 配置存储在 KV 命名空间 `HOMEDOCK_CONFIG` 中；  
-   - 多浏览器、多设备共享同一份配置。  
-   - 详见 `docs/DEPLOY_CLOUDFLARE.md`。
-
-2. **NAS / 家庭服务器部署（自托管，带壁纸，可共享配置）**  
-   - 在 NAS / 家庭服务器上运行 Python 3 + `dev-server.py`：  
-     - 提供静态文件；  
-     - 通过 `/api/config` 读写本地 `apps-config.json`，实现多设备共享同一份配置；  
-     - 通过 `/bing-wallpaper` 代理必应每日壁纸；  
-   - 可以直接在宿主机上运行 `python3 dev-server.py`，也可以通过 Docker / docker-compose 方式运行（推荐后者，便于备份与迁移）；  
-   - 配置同时保存在：
-     - 服务器本地：`apps-config.json`（由 `dev-server.py` 负责读写）；  
-     - 浏览器本地：`localStorage['homedock-config']`（前端缓存，加快加载速度）；  
-   - 详细步骤见 `docs/NAS_DEPLOY.md`：  
-     - 模式二：NAS + Python `dev-server.py`；  
-     - 模式三：Docker 部署（容器化 NAS / 家庭服务器）。  
-
+        
+HomeDock 支持两种主要线上部署方式 + 一种纯静态方式：
+        
+1. **Cloudflare Pages + Worker + KV（进阶方式）**  
+   - 通过 Cloudflare Pages 托管静态页面，并在同一域名下接入 Cloudflare Worker 与 KV，实现 `/api/config` 和 `/bing-wallpaper` 等接口；  
+   - 需要自行在 Cloudflare 后台配置 Pages 项目、Worker 路由和 KV 命名空间，有兴趣的用户可参考 `docs/DEPLOY_CLOUDFLARE.md` 自行研究和搭建。
+        
+2. **Docker 一键部署（推荐 NAS / 家庭服务器）**  
+   - 在 NAS / 家庭服务器上下载安装脚本 `install-homedock.sh`；  
+   - 脚本会自动检测并安装 Docker（如未安装）、拉取 `binbin1213/homedock` 镜像，并根据交互选择的数据目录与端口启动容器；  
+   - 通过挂载卷 `/data` 将配置持久化到宿主机目录，升级或重建容器不会丢失配置；  
+   - 详细步骤见 `docs/NAS_DEPLOY.md` 中的「Docker 一键部署」部分。
+        
 3. **NAS 纯静态部署（自托管，无服务端功能）**  
    - 将 `index.html`、`admin.html`、`css/`、`img/`、`apps-config.json`、`js/` 等静态资源上传到 NAS Web 根目录；  
    - 不跑任何后端程序，无法使用 `/bing-wallpaper` 和云端配置 API；  
    - 配置仅保存在各浏览器的 `localStorage['homedock-config']` 中，不会回写 `apps-config.json`；  
    - 建议在后台中选择「纯色」或「渐变」背景模式。  
-   - 详细说明见 `docs/NAS_DEPLOY.md` 中的「模式一：纯静态部署」。
+   - 详细说明见 `docs/NAS_DEPLOY.md` 中的「纯静态部署」部分。
 
 ---
 

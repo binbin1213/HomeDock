@@ -22,12 +22,11 @@ HomeDock 前端是纯静态的，但配置读写有三层：
 - 浏览器本地缓存：`localStorage["homedock-config"]`
 - 可选服务器持久化：`/api/config` 读写服务器上的配置
 
-在 NAS / 家庭服务器上，推荐三种模式：
-
-1. 纯静态部署（入门）  
-2. NAS + Python `dev-server.py`（带 `/api/config` 的共享配置）  
-3. Docker 部署（后端和静态文件都容器化）
-
+在 NAS / 家庭服务器上，推荐两种模式：
+        
+1. 纯静态部署（入门，功能最少、最简单）  
+2. Docker 一键部署（推荐，一条脚本命令完成部署）
+        
 下面分别说明。
 
 ---
@@ -77,162 +76,113 @@ HomeDock 前端是纯静态的，但配置读写有三层：
 
 ---
 
-## 三、模式二：NAS + Python dev-server（推荐，有共享配置）
-
+## 三、Docker 一键部署（推荐，有共享配置）
+        
 适合场景：
-
-- NAS 或家庭服务器上可以安装 Python 3；
-- 希望所有设备共享同一份应用配置；
-- 不介意用一个轻量级 Python 进程作为后端。
-
+        
+- NAS 或家庭服务器上可以安装 Docker（大部分群晖 / Linux 服务器均支持）；
+- 希望所有设备共享同一份应用配置，并尽量减少手动配置步骤；
+- 希望后续升级、迁移时尽量简单。
+        
 核心思路：
-
-- 静态文件仍然从 NAS 对外提供；
-- 额外运行 `dev-server.py` 监听 `/api/config` 和 `/bing-wallpaper`；
-- 前端通过相对路径 `/api/config` 访问这个服务器；
-- 配置统一落在 NAS 上的 `apps-config.json`。
-
-### 3.1 准备目录
-
-假设你把整个项目放在：
-
-```text
-/volume1/docker/homedock/web
-```
-
-其中 `web` 目录就是当前项目根：
-
-- `index.html`
-- `admin.html`
-- `apps-config.json`
-- `dev-server.py`
-- `js/`、`css/` 等
-
-### 3.2 在 NAS 上安装 Python 3
-
-- 群晖：
-  - 可以通过套件中心安装 Python3；
-  - 或者使用 Docker 映像运行 Python（见下一节）。
-- QNAP / 其它 Linux：
-  - 一般系统自带或可以通过包管理器安装，例如：
-    - `sudo apt-get install python3`
-    - `sudo yum install python3`
-
-### 3.3 启动 dev-server.py
-
-在 NAS 上通过 SSH 进入项目根目录：
-
+        
+- 使用官方镜像 `binbin1213/homedock` 运行一个容器；
+- 通过挂载卷 `/data` 将配置持久化到 NAS 目录；
+- 通过一条安装脚本自动完成 Docker 安装、镜像拉取与容器启动。
+        
+### 3.1 准备环境
+        
+1. 确保 NAS / 服务器可以访问公网（用于下载 Docker 与镜像）；  
+2. 在 NAS / 服务器上开启 SSH，并以具有 sudo 权限的用户登陆；  
+3. 建议准备一个用于存放配置的数据目录，例如：`/volume1/docker/homedock-data`。
+        
+### 3.2 下载一键部署脚本
+        
+在目标服务器上执行：
+        
 ```bash
-cd /volume1/docker/homedock/web
-python3 dev-server.py --port 8000
+cd ~
+curl -fsSL https://raw.githubusercontent.com/binbin1213/HomeDock/main/web/install-homedock.sh -o install-homedock.sh
+chmod +x install-homedock.sh
 ```
-
-看到类似输出：
-
-```text
-🚀 HomeDock 开发服务器已启动!
-📍 服务器地址: http://localhost:8000
-🏠 首页: http://localhost:8000/index.html
-⚙️  管理页面: http://localhost:8000/admin.html
-❤️  健康检查: http://localhost:8000/health
-```
-
-此时：
-
-- 前端页面直接访问这个 Python 服务器即可：
-  - `http://NAS_IP:8000/index.html`
-  - `http://NAS_IP:8000/admin.html`
-- 前端对 `/api/config` 的请求会交给 `dev-server.py` 处理：
-  - `GET /api/config` → 读取当前目录的 `apps-config.json`
-  - `POST /api/config` → 把配置写回 `apps-config.json`
-
-### 3.4 持久化效果
-
-- 后台 `admin.html` 上所有操作（添加应用、批量导入、上传图标、调整背景等），最终都会写入：
-  - 浏览器本地：`localStorage["homedock-config"]`
-  - 服务器本地：`/volume1/docker/homedock/web/apps-config.json`
-- 任何设备只要访问同一个地址（例如 `http://nas.local:8000/index.html`）：
-  - 打开首页时优先从 `/api/config` 读取这份 JSON；
-  - 所有人看到同一份应用列表和图标。
-
-### 3.5 配合 NAS 反向代理
-
-为了避免端口号和 IP 地址直接暴露，可以在 NAS 的反向代理里做一层友好的域名，例如：
-
-- 在 NAS 反向代理管理界面中添加规则：
-  - 外部域名：`https://home.yourdomain.com`
-  - 目标地址：`http://127.0.0.1:8000`
-- 这样用户访问：
-  - `https://home.yourdomain.com/index.html`
-  - `https://home.yourdomain.com/admin.html`
-- 前端的 `/api/config`、`/bing-wallpaper` 也都通过该域名转发到 `dev-server.py`。
-
----
-
-## 四、模式三：Docker 部署（容器化 NAS / 家庭服务器）
-
-适合场景：
-
-- NAS 上已经大量使用 Docker；
-- 希望 HomeDock 和它的配置完全容器化管理；
-- 方便备份 / 迁移 / 快速重建。
-
-思路：
-
-- 使用一个容器跑静态文件 + Python dev-server；
-- 把 `apps-config.json` 所在目录通过卷挂载到 NAS 上；
-- 通过反向代理把外部域名指向这个容器。
-
-### 4.1 简单 docker-compose 示例
-
-在某个目录（例如 `/volume1/docker/homedock`）创建 `docker-compose.yml`：
-
-```yaml
-version: "3.8"
-services:
-  homedock:
-    image: homedock-local
-    container_name: homedock
-    volumes:
-      - /volume1/docker/homedock-data:/data
-    ports:
-      - "8000:8000"
-    restart: unless-stopped
-```
-
-然后：
-
+        
+### 3.3 运行脚本并完成部署
+        
+执行：
+        
 ```bash
-cd /volume1/docker/homedock
-docker build -t homedock-local .
-docker compose up -d
+./install-homedock.sh
 ```
-
-此时：
-
-- 容器内 `/app` 已经包含整个 HomeDock 前端和后端脚本；
-- `dev-server.py` 在容器里监听 `8000` 端口；
-- NAS 上的 `/volume1/docker/homedock-data/apps-config.json` 会随着配置变动自动更新。
-
-如果希望前端静态文件由 Nginx 提供，也可以拆成两个服务（一个 Nginx 静态容器 + 一个 Python API 容器），前端访问 `/api/config` 时再由 Nginx 转发到后者，原理与上面反向代理一致。
-
+        
+脚本会依次完成：
+        
+1. 检测当前系统（Ubuntu、Debian 等）并输出系统名称；  
+2. 检查是否已安装 Docker：  
+   - 未安装：自动通过官方脚本 `get.docker.com` 安装；  
+   - 已安装：跳过安装步骤；  
+3. 如 Docker 服务未启动，会尝试通过 `systemctl start docker` 启动；  
+4. 交互式询问：
+   - 数据目录（默认：`/opt/homedock-data`，可填例如 `/volume1/docker/homedock-data`）；  
+   - 映射端口（默认：`8000`）；  
+   - 镜像版本标签（默认：`latest`，也可以手动输入 `v1.0.0` 等固定版本）；  
+5. 创建数据目录并拉取镜像：
+   - 镜像：`binbin1213/homedock:<你选择的标签>`；  
+6. 如存在旧的 `homedock` 容器，会先停止并删除；  
+7. 启动新容器：
+        
+   ```bash
+   docker run -d \
+     --name homedock \
+     -p 映射端口:8000 \
+     -v 数据目录:/data \
+     --restart unless-stopped \
+     binbin1213/homedock:<镜像标签>
+   ```
+        
+脚本结束时会自动输出可访问地址，例如：
+        
+```text
+首页:  http://192.168.1.100:8000/index.html
+后台:  http://192.168.1.100:8000/admin.html
+```
+        
+你只需要在浏览器中访问对应地址即可使用。
+        
+### 3.4 配置持久化与升级
+        
+- 持久化位置：  
+  - 所有后台更改（应用列表、图标、背景设置）最终都会写入容器内 `/data/apps-config.json`；  
+  - 该路径被映射到你在脚本中选择的数据目录（如 `/volume1/docker/homedock-data/apps-config.json`），容器删除或重建后配置仍然存在。
+        
+- 升级镜像：  
+  1. 在服务器上执行：
+     
+     ```bash
+     docker pull binbin1213/homedock:latest
+     docker stop homedock
+     docker rm homedock
+     ```
+     
+  2. 重新运行 `./install-homedock.sh`，选择同一个数据目录和端口，镜像标签可以继续用 `latest` 或指定新版本。  
+     
+  这样可以在保留配置的前提下平滑升级。
+        
 ---
-
-## 五、推荐部署方案总结
-
-结合 NAS 的特点，建议优先考虑：
-
-- 单人 / 同一浏览器使用：
-  - 可以用「模式一：纯静态部署」最快跑起来；
-- 家庭多设备、局域网共享配置：
-  - 推荐「模式二：NAS + dev-server.py」，实现统一的应用列表和图标；
-- 有大量容器化需求、希望可移植：
-  - 使用「模式三：Docker 部署」，把整个 HomeDock 当成一个独立服务。
-
+        
+## 四、推荐部署方案总结
+        
+结合 NAS / 家庭服务器的特点，建议优先考虑：
+        
+- 单人 / 单设备使用：  
+  - 使用「纯静态部署」最快跑起来，部署简单；  
+  - 配置只保存在当前浏览器的 `localStorage` 中。
+- 家庭多设备、局域网甚至公网访问：  
+  - 推荐使用「Docker 一键部署」，通过容器 + 数据卷方式实现统一配置与持久化；  
+  - 升级、迁移、备份都更方便。
+        
 无论采用哪种方式，只要确保：
-
-- 前端始终能访问 `index.html` 和 `admin.html`；
-- `/api/config` 在需要共享配置时能正确返回和保存 JSON；
-- `apps-config.json` 所在目录挂在 NAS 的持久存储上，
-
+        
+- 前端始终能访问 `index.html` 和 `admin.html`；  
+- 如使用 Docker，一定要为 `/data` 挂载宿主机目录以持久化 `apps-config.json`；  
+        
 就可以在 NAS / 家庭服务器上稳定地长期运行 HomeDock，作为整个家庭或小型工作室的统一入口。
