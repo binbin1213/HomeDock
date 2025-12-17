@@ -18,6 +18,9 @@ import threading
 import webbrowser
 from pathlib import Path
 
+DATA_DIR = Path(os.environ.get("HOMEDOCK_DATA_DIR", "."))
+CONFIG_PATH = DATA_DIR / "apps-config.json"
+
 class DevServerHandler(http.server.SimpleHTTPRequestHandler):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, directory=".", **kwargs)
@@ -78,9 +81,8 @@ class DevServerHandler(http.server.SimpleHTTPRequestHandler):
         """处理配置 API"""
         try:
             # 尝试读取本地配置文件
-            config_file = Path('apps-config.json')
-            if config_file.exists():
-                with open(config_file, 'r', encoding='utf-8') as f:
+            if CONFIG_PATH.exists():
+                with open(CONFIG_PATH, 'r', encoding='utf-8') as f:
                     config = json.load(f)
 
                 self.send_response(200)
@@ -124,10 +126,11 @@ class DevServerHandler(http.server.SimpleHTTPRequestHandler):
                 raise ValueError("Invalid config format")
 
             # 保存到文件
-            with open('apps-config.json', 'w', encoding='utf-8') as f:
+            DATA_DIR.mkdir(parents=True, exist_ok=True)
+            with open(CONFIG_PATH, 'w', encoding='utf-8') as f:
                 json.dump(config, f, ensure_ascii=False, indent=2)
 
-            print(f" Config saved to apps-config.json")
+            print(f" Config saved to {CONFIG_PATH}")
 
             self.send_response(200)
             self.send_header('Content-Type', 'application/json')

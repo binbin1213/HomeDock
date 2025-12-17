@@ -4,7 +4,10 @@ WORKDIR /app
 
 COPY . /app
 
+ENV HOMEDOCK_DATA_DIR=/data
+
+VOLUME ["/data"]
+
 EXPOSE 8000
 
-CMD ["python", "server.py"]
-
+CMD ["python", "dev-server.py", "--port", "8000"]

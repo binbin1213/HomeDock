@@ -191,12 +191,10 @@ python3 dev-server.py --port 8000
 version: "3.8"
 services:
   homedock:
-    image: python:3.11-slim
+    image: homedock-local
     container_name: homedock
-    working_dir: /app
     volumes:
-      - ./web:/app
-    command: ["python", "dev-server.py", "--port", "8000"]
+      - /volume1/docker/homedock-data:/data
     ports:
       - "8000:8000"
     restart: unless-stopped
@@ -206,14 +204,15 @@ services:
 
 ```bash
 cd /volume1/docker/homedock
+docker build -t homedock-local .
 docker compose up -d
 ```
 
 此时：
 
-- 容器内 `/app` 就是你当前的 `web` 目录；
+- 容器内 `/app` 已经包含整个 HomeDock 前端和后端脚本；
 - `dev-server.py` 在容器里监听 `8000` 端口；
-- NAS 上的 `./web/apps-config.json` 会随着配置变动自动更新。
+- NAS 上的 `/volume1/docker/homedock-data/apps-config.json` 会随着配置变动自动更新。
 
 如果希望前端静态文件由 Nginx 提供，也可以拆成两个服务（一个 Nginx 静态容器 + 一个 Python API 容器），前端访问 `/api/config` 时再由 Nginx 转发到后者，原理与上面反向代理一致。
 
@@ -237,4 +236,3 @@ docker compose up -d
 - `apps-config.json` 所在目录挂在 NAS 的持久存储上，
 
 就可以在 NAS / 家庭服务器上稳定地长期运行 HomeDock，作为整个家庭或小型工作室的统一入口。
-
