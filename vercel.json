@@ -9,6 +9,19 @@
   "rewrites": [
     {
       "source": "/api/(.*)",
+      "destination": "/api/$1"
+    },
+    {
+      "source": "/bing-wallpaper",
+      "destination": "/api/bing-wallpaper"
+    }
+  ],
+  "outputDirectory": "."
+}
+  ],
+  "rewrites": [
+    {
+      "source": "/api/(.*)",
       "dest": "/api/$1"
     },
     {
