@@ -17,5 +17,6 @@
       "source": "/bing-wallpaper",
       "destination": "/api/bing-wallpaper"
     }
-  ]
+  ],
+  "outputDirectory": "."
 }
