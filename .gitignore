@@ -30,3 +30,4 @@ fix-errors.js
 start-dev.sh
 apps-config.json
 .claude/
+.serena/
