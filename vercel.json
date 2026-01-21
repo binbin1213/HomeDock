@@ -1,12 +1,8 @@
 {
   "rewrites": [
     {
-      "source": "/api/:path*",
-      "destination": "/api/:path*"
-    },
-    {
       "source": "/bing-wallpaper",
-      "destination": "/api/bing-wallpaper.js"
+      "destination": "/api/bing-wallpaper"
     }
   ]
 }
