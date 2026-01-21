@@ -1,0 +1,27 @@
+{
+  "name": "homedock",
+  "version": "1.0.0",
+  "description": "HomeDock - NAS / 家庭服务器起始页与导航面板",
+  "main": "index.html",
+  "scripts": {
+    "dev": "vercel dev",
+    "build": "echo 'No build required for static site'",
+    "start": "echo 'Use vercel dev to start local server'"
+  },
+  "keywords": [
+    "homepage",
+    "dashboard",
+    "nas",
+    "startpage",
+    "bookmark-manager"
+  ],
+  "author": "binbin1213",
+  "license": "MIT",
+  "dependencies": {
+    "@vercel/kv": "^3.0.0"
+  },
+  "devDependencies": {},
+  "engines": {
+    "node": ">=18"
+  }
+}
