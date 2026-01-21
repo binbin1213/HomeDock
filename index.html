@@ -124,15 +124,28 @@
       };
     }
   </script>
-  <script src="js/utils/helpers.js"></script>
-  <script src="js/preset-icons.js"></script>
-  <script src="js/utils/notification.js"></script>
-  <script src="js/utils/service-worker.js"></script>
-  <script src="js/utils/image-optimizer.js"></script>
-  <script src="js/modules/config-manager.js"></script>
-  <script src="js/modules/app-renderer.js"></script>
-  <script src="js/modules/ui-controller.js"></script>
-  <script src="js/modules/search-engine.js"></script>
+  <script src="js/utils/helpers.js" defer></script>
+  <script src="js/preset-icons.js" defer></script>
+  <script src="js/utils/notification.js" defer></script>
+  <script src="js/utils/service-worker.js" defer></script>
+  <script src="js/modules/config-manager.js" defer></script>
+  <script src="js/modules/app-renderer.js" defer></script>
+  <script src="js/modules/ui-controller.js" defer></script>
+  <script src="js/modules/search-engine.js" defer></script>
+
+  <!-- 非关键脚本延迟加载 -->
+  <script>
+    // 页面加载完成后延迟加载图片优化器
+    window.addEventListener('load', function() {
+      setTimeout(function() {
+        var script = document.createElement('script');
+        script.src = 'js/utils/image-optimizer.js';
+        script.defer = true;
+        document.head.appendChild(script);
+        console.log('✅ Image optimizer loaded asynchronously');
+      }, 2000); // 延迟 2 秒加载
+    });
+  </script>
 
   <!-- 主应用初始化脚本 -->
   <script>

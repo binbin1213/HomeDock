@@ -83,18 +83,21 @@ class SearchEngine {
 
     console.log('🖼️ Setting up Bing wallpaper:', imageUrl);
 
-    // 预加载图片
+    // 🚀 性能优化：立即设置基础背景色，避免白屏
+    document.body.style.backgroundColor = '#202124';
+    document.body.style.backgroundRepeat = 'no-repeat';
+    document.body.style.backgroundSize = 'cover';
+    document.body.style.backgroundPosition = 'center center';
+    document.body.style.backgroundAttachment = 'fixed';
+
+    // 异步加载壁纸图片
     const img = new Image();
 
     img.onload = () => {
       console.log('✅ Bing wallpaper loaded successfully');
+      // 图片加载完成后替换背景
       document.body.style.backgroundImage =
         `linear-gradient(rgba(0, 0, 0, 0.35), rgba(0, 0, 0, 0.35)), url('${imageUrl}')`;
-      document.body.style.backgroundRepeat = 'no-repeat';
-      document.body.style.backgroundSize = 'cover';
-      document.body.style.backgroundPosition = 'center center';
-      document.body.style.backgroundAttachment = 'fixed';
-      document.body.style.backgroundColor = '#000000';
     };
 
     img.onerror = (error) => {
@@ -116,6 +119,7 @@ class SearchEngine {
       }
     }, 10000); // 10秒超时
 
+    // 开始异步加载
     img.src = imageUrl;
   }
 
