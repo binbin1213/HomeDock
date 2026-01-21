@@ -21,7 +21,7 @@ export default async function handler(req, res) {
 
   try {
     // 从 URL 参数获取市场（默认中文）
-    const url = new URL(req.url);
+    const url = new URL(req.url, `https://${req.headers.host}`);
     const market = url.searchParams.get('mkt') || 'zh-CN';
     const idx = url.searchParams.get('idx') || '0';
     const n = url.searchParams.get('n') || '8';
