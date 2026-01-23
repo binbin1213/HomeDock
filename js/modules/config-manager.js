@@ -74,6 +74,12 @@ class ConfigManager {
 
       const data = await response.json();
 
+      // 服务器返回 null 表示 KV 中没有配置，回退到本地配置
+      if (data === null) {
+        console.info('服务器返回 null，回退到本地配置');
+        return null;
+      }
+
       if (!this.validateConfig(data)) {
         throw new Error('服务器返回的配置格式无效');
       }
