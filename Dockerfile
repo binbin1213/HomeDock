@@ -3,6 +3,9 @@ FROM node:18-alpine AS builder
 
 WORKDIR /app
 
+# 安装 bash（Alpine 默认只有 sh）
+RUN apk add --no-cache bash
+
 # 复制 package.json 和构建配置
 COPY package.json package-lock.json* ./
 COPY esbuild.config.js ./
