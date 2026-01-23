@@ -9,14 +9,15 @@ COPY esbuild.config.js ./
 COPY postcss.config.js ./
 COPY build.sh ./
 
-# 安装依赖
+# 安装依赖（包括所有 devDependencies）
 RUN npm ci
 
 # 复制源代码
 COPY . .
 
-# 构建项目
-RUN npm run build
+# 设置 PATH 并构建
+ENV PATH="/app/node_modules/.bin:$PATH"
+RUN chmod +x build.sh && ./build.sh all
 
 # 生产阶段 - 使用 Python 镜像运行服务
 FROM python:3.11-alpine
