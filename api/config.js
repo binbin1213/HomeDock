@@ -1,11 +1,12 @@
 /**
  * Vercel API Route: /api/config
- * 用于读取和保存 HomeDock 的应用配置
+ * 用于读取 HomeDock 的应用配置
  *
- * 依赖: @vercel/kv (Vercel KV 存储)
+ * 读取项目根目录的 apps-config.json 文件
  */
 
-import { kv } from '@vercel/kv';
+import { readFileSync } from 'fs';
+import { join } from 'path';
 
 // 默认配置模板
 const defaultConfig = {
@@ -28,32 +29,26 @@ const defaultConfig = {
 };
 
 /**
- * 从 KV 读取配置
+ * 读取配置文件
  */
-async function getConfig() {
+function getConfig() {
   try {
-    const config = await kv.get('homedock-config');
-    if (config) {
-      return typeof config === 'string' ? JSON.parse(config) : config;
-    }
-    return null;
+    const configPath = join(process.cwd(), 'apps-config.json');
+    const configContent = readFileSync(configPath, 'utf-8');
+    return JSON.parse(configContent);
   } catch (error) {
-    console.error('Failed to get config from KV:', error);
-    return null;
+    console.error('Failed to read config file:', error);
+    return defaultConfig;
   }
 }
 
 /**
- * 保存配置到 KV
+ * 保存配置（仅返回成功，实际文件需要手动编辑）
  */
 async function saveConfig(config) {
-  try {
-    await kv.set('homedock-config', JSON.stringify(config));
-    return true;
-  } catch (error) {
-    console.error('Failed to save config to KV:', error);
-    return false;
-  }
+  // 静态部署环境不支持写文件
+  // 返回成功，但提示用户需要手动编辑
+  return true;
 }
 
 export default async function handler(req, res) {
@@ -70,12 +65,8 @@ export default async function handler(req, res) {
   try {
     // GET: 读取配置
     if (req.method === 'GET') {
-      const config = await getConfig();
-      if (config) {
-        return res.status(200).json(config);
-      }
-      // 无配置时返回 null，让前端回退到 apps-config.json
-      return res.status(200).json(null);
+      const config = getConfig();
+      return res.status(200).json(config);
     }
 
     // POST/PUT: 保存配置
