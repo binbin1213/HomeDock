@@ -1,18 +1,35 @@
+# 构建阶段 - 使用 Node.js 镜像构建前端
+FROM node:18-alpine AS builder
+
+WORKDIR /app
+
+# 复制 package.json 和构建配置
+COPY package.json package-lock.json* ./
+COPY esbuild.config.js ./
+COPY postcss.config.js ./
+COPY build.sh ./
+
+# 安装依赖
+RUN npm ci
+
+# 复制源代码
+COPY . .
+
+# 构建项目
+RUN npm run build
+
+# 生产阶段 - 使用 Python 镜像运行服务
 FROM python:3.11-alpine
 
 WORKDIR /app
 
-# 先复制项目文件（包括源码和构建配置）
-COPY . /app
+# 从构建阶段复制构建产物
+COPY --from=builder /app/dist /app
 
-# 安装 Node.js 和构建依赖
-RUN apk add --no-cache nodejs npm
-
-# 构建项目
-RUN npm install && npm run build
-
-# 将构建后的 dist 目录内容复制到 /app 根目录
-RUN cp -r dist/* /app/ && rm -rf dist node_modules package*.json
+# 复制必要的文件
+COPY dev-server.py ./
+COPY admin.html ./
+COPY api/ ./api/
 
 ENV HOMEDOCK_DATA_DIR=/data
 
