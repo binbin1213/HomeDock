@@ -99,9 +99,15 @@ class UIController {
     if (savedView === 'internal') {
       leftBtn.classList.remove('active');
       rightBtn.classList.add('active');
+      // ✅ 更新 ARIA 状态
+      leftBtn.setAttribute('aria-pressed', 'false');
+      rightBtn.setAttribute('aria-pressed', 'true');
     } else {
       leftBtn.classList.add('active');
       rightBtn.classList.remove('active');
+      // ✅ 更新 ARIA 状态
+      leftBtn.setAttribute('aria-pressed', 'true');
+      rightBtn.setAttribute('aria-pressed', 'false');
     }
 
     this.updateAppView(savedView === 'internal', externalContainer, internalContainer);
@@ -110,6 +116,9 @@ class UIController {
     DOM.on(leftBtn, 'click', () => {
       leftBtn.classList.add('active');
       rightBtn.classList.remove('active');
+      // ✅ 更新 ARIA 状态
+      leftBtn.setAttribute('aria-pressed', 'true');
+      rightBtn.setAttribute('aria-pressed', 'false');
       Helpers.Storage.set('homedock-app-view', 'external');
       this.updateAppView(false, externalContainer, internalContainer);
     });
@@ -117,6 +126,9 @@ class UIController {
     DOM.on(rightBtn, 'click', () => {
       rightBtn.classList.add('active');
       leftBtn.classList.remove('active');
+      // ✅ 更新 ARIA 状态
+      rightBtn.setAttribute('aria-pressed', 'true');
+      leftBtn.setAttribute('aria-pressed', 'false');
       Helpers.Storage.set('homedock-app-view', 'internal');
       this.updateAppView(true, externalContainer, internalContainer);
     });

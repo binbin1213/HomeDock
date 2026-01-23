@@ -1,8 +1,30 @@
-/*!Animate.css - http://daneden.me/animate*/.animated {
+/*!Animate.css - http://daneden.me/animate*/
+.animated {
 	-webkit-animation-duration: 1s;
 	animation-duration: 1s;
 	-webkit-animation-fill-mode: both;
 	animation-fill-mode: both
+}
+
+/* ✅ 优化动画时长 - 微交互使用 300ms */
+.animated.fadeInLeft,
+.animated.fadeInRight {
+	animation-duration: 300ms;
+}
+
+/* 页面入场动画 */
+.app-page-item {
+	animation-duration: 350ms;
+}
+
+/* 编辑模式动画 */
+.edit-shake {
+	animation-duration: 600ms;
+}
+
+/* 模态框动画 */
+.edit-modal-content {
+	animation-duration: 250ms;
 }
 
 .animated.infinite {
@@ -85,7 +107,7 @@
   justify-content: center;
   border-radius: 50%;
   transition: all 0.3s ease;
-  z-index: 10;
+  z-index: var(--z-dropdown);
   background-color: rgba(0, 0, 0, 0.5);
 }
 
@@ -94,15 +116,15 @@
 }
 
 .edit-btn {
-  font-size: 36px;
+  font-size: 24px;
   background: none !important;
-  color: #4A90E2 !important; /* 蓝色单色 */
-  background-color: rgba(255, 255, 255, 0.9) !important; /* 半透明白色背景 */
+  color: #FFF !important;  /* 白色图标 */
+  background-color: transparent !important;  /* ✅ 无背景 */
   cursor: pointer;
-  z-index: 10;
+  z-index: var(--z-dropdown);
   border: none !important;
   outline: none !important;
-  padding: 12px !important;
+  padding: 8px !important;
   margin: 0 !important;
   width: auto !important;
   height: auto !important;
@@ -112,15 +134,42 @@
   font-family: inherit !important;
   line-height: 1 !important;
   text-decoration: none !important;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3) !important;
+  box-shadow: none !important;  /* ✅ 无阴影 */
+  transition: all 0.3s ease;  /* ✅ 添加过渡动画 */
+}
+
+/* 编辑按钮内的 SVG 图标样式 */
+.edit-btn .edit-icon-svg {
+  width: 32px;  /* ✅ 从24px放大到32px */
+  height: 32px;
+  color: #FFF;  /* 白色 */
+  transition: transform 0.3s ease;  /* ✅ 添加过渡动画 */
+}
+
+/* 编辑按钮悬浮效果 */
+.edit-btn:hover {
+  background-color: transparent !important;
+  transform: translate(-50%, -50%) scale(1.2);  /* ✅ 悬浮时放大 */
+}
+
+.edit-btn:hover .edit-icon-svg {
+  transform: scale(1.1);  /* ✅ SVG 图标也放大 */
 }
 
 /* 确保应用项目相对定位 */
 .app-item {
   position: relative !important;
   display: inline-block !important;
-  width: 128px !important;
-  height: 128px !important;
+  width: 112px !important;  /* ✅ 从128px改为112px，匹配图标尺寸 */
+  height: 112px !important;
+}
+
+/* 当鼠标悬浮在应用项目的任何位置时，图标都变暗 */
+.app-item:hover img {
+  filter:
+    drop-shadow(0 2px 4px rgba(0, 196, 255, 0.3))   /* ✅ 减小内层阴影 */
+    drop-shadow(0 4px 10px rgba(0, 136, 255, 0.5))  /* ✅ 减小外层阴影 */
+    brightness(0.7) !important;  /* ✅ 悬浮时变暗 */
 }
 
 /* 编辑按钮相对于应用项目居中 */
@@ -131,34 +180,51 @@
   transform: translate(-50%, -50%) !important;
 }
 
-/* 编辑模式下显示编辑按钮 */
-body.edit-mode .edit-btn {
+/* 编辑模式下，鼠标悬浮时显示编辑按钮 */
+body.edit-mode .app-item:hover .edit-btn {
   display: inline-block !important;
 }
 
-.edit-btn:hover {
-  background-color: rgba(255, 255, 255, 1) !important; /* 悬浮时完全不透明 */
-}
-
-.edit-btn:hover:not(.edit-shake) {
-  transform: translate(-50%, -50%) scale(1.1);
-}
-
-.edit-shake:hover {
-  transform: translate(-50%, -50%) scale(1.1);
-}
-
 .delete-btn {
-  width: 21px;
-  height: 21px;
+  width: 24px;  /* ✅ 从32px缩小到24px */
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   font-size: 12px;
-  top: 5px;
-  right: 5px;
-  background-color: rgba(220, 53, 69, 0.5);
+  top: -4px;  /* ✅ 往外挪，但不要太远 */
+  right: -4px;
+  background-color: #FFF;  /* ✅ 白色背景 */
+  border: 2px solid #FFF;  /* ✅ 白色边框 */
+  border-radius: 50%;  /* 圆形触摸区域 */
+  transition: all 0.2s ease;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);  /* 添加阴影提升可见性 */
+  padding: 0;  /* ✅ 移除内边距 */
+  line-height: 1;  /* ✅ 确保垂直居中 */
+}
+
+.delete-btn::before {
+  content: '×';
+  font-size: 18px;  /* ✅ 增大尺寸 */
+  font-weight: bold;
+  color: #DC3545;  /* ✅ 红色 */
+  line-height: 1;  /* ✅ 确保垂直居中 */
 }
 
 .delete-btn:hover {
-  background-color: rgba(220, 53, 69, 0.5);
+  background-color: #FFF;  /* ✅ 保持白色背景 */
+  border-color: #FFF;  /* ✅ 保持白色边框 */
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);  /* ✅ 加强阴影 */
+  transform: scale(1.1);
+}
+
+.delete-btn:hover::before {
+  color: #A71D2A;  /* ✅ 悬浮时深红色 */
+}
+
+/* 编辑模式下始终显示删除按钮 */
+body.edit-mode .delete-btn {
+  display: flex !important;
 }
 
 
@@ -166,7 +232,7 @@ body.edit-mode .edit-btn {
 /* 编辑模态框样式 */
 .edit-modal {
   position: fixed;
-  z-index: 1000;
+  z-index: var(--z-modal);
   left: 0;
   top: 0;
   width: 100%;
@@ -193,20 +259,25 @@ body.edit-mode .edit-btn {
 
 .edit-modal-close {
   color: #aaa;
-  float: right;
   font-size: 28px;
   font-weight: bold;
   cursor: pointer;
   position: absolute;
-  right: 15px;
-  top: 10px;
+  right: 20px;
+  top: 15px;
+  background: none;
+  border: none;
+  padding: 0;
+  margin: 0;
+  transition: color 0.2s ease;
+  z-index: 10;
 }
 
 .edit-modal-close:hover,
 .edit-modal-close:focus {
   color: white;
-  text-decoration: none;
-  cursor: pointer;
+  background: none;
+  transform: none;
 }
 
 .edit-modal h2 {
@@ -337,6 +408,108 @@ body,dd,dl,fieldset,form,h1,h2,h3,h4,h5,h6,input,legend,ol,p,select,td,textarea,
 	padding: 0
 }
 
+/* ========================================
+   Z-Index 规模系统
+   ======================================== */
+:root {
+  --z-base: 1;
+  --z-dropdown: 10;
+  --z-sticky: 20;
+  --z-fixed: 30;
+  --z-modal-backdrop: 40;
+  --z-modal: 50;
+  --z-popover: 60;
+  --z-tooltip: 70;
+  --z-notification: 80;
+  --z-always-on-top: 100;
+}
+
+/* ========================================
+   可访问性 - 焦点状态 (WCAG 2.1 AA)
+   ======================================== */
+
+/* 统一所有可点击元素的光标样式 */
+button,
+a,
+input[type="button"],
+input[type="submit"],
+[role="button"],
+.clickable,
+.app-item,
+.switch-btn,
+.edit-btn-new,
+#admin-link,
+.search-engine-selector,
+.dropdown-item,
+.icon-picker-item,
+.page-arrow,
+#change-wallpaper-btn,
+.icon-btn,
+.edit-btn,
+.delete-btn,
+.notification {
+  cursor: pointer;
+}
+
+/* 为所有可交互元素添加焦点状态 */
+button:focus-visible,
+a:focus-visible,
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible,
+[tabindex]:focus-visible {
+  outline: 2px solid #00C4FF;
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+/* 移除鼠标点击时的焦点环（保留键盘导航） */
+button:focus:not(:focus-visible),
+a:focus:not(:focus-visible) {
+  outline: none;
+}
+
+/* 特定元素的焦点状态优化 */
+#edit-toggle-btn:focus-visible {
+  outline-offset: 4px;
+}
+
+.switch-btn:focus-visible {
+  outline-offset: 2px;
+}
+
+.app-item a:focus-visible {
+  outline-offset: 4px;
+  border-radius: 8px;
+}
+
+.dropdown-item:focus-visible {
+  background: rgba(0, 196, 255, 0.1);
+}
+
+/* 浅色模式下的焦点状态 */
+@media (prefers-color-scheme: light) {
+  button:focus-visible,
+  a:focus-visible,
+  input:focus-visible,
+  [tabindex]:focus-visible {
+    outline-color: #0284C7; /* Sky 600 */
+    outline-width: 2px;
+  }
+}
+
+/* 尊重用户偏好 - 减少动画 */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
 img {
 	border: 0;
 	vertical-align: middle
@@ -356,7 +529,9 @@ a {
 }
 
 @font-face {
-	font-family:MyriadSetPro-Thin;src:url(./font/MyriadSetPro-Thin.ttf)
+	font-family:MyriadSetPro-Thin;
+	src:url(./font/MyriadSetPro-Thin.ttf);
+	font-display: swap;
 }
 
 body {
@@ -422,17 +597,17 @@ body::after {
 	margin: 0 auto;
 	overflow: visible;
 	position: relative;
-	z-index: 1;
+	z-index: var(--z-base);
 }
 
 #top {
-	margin-top: 15%;
+	margin-top: 3%;  /* ✅ 从8%改为3%，更靠上 */
 	width: 100%;
 	height: 162px
 }
 
 #main {
-	margin-top: 6%
+	margin-top: 5%  /* ✅ 从3%改为5%，增加搜索框与图标的距离 */
 }
 
 #logo {
@@ -444,7 +619,8 @@ body::after {
 }
 
 #logo:hover {
-	transform: translateY(-2px);
+	/* ✅ 移除 translateY，使用轻微放大避免布局位移 */
+	transform: scale(1.02);
 	filter: drop-shadow(0 10px 24px rgba(0, 0, 0, 0.5));
 }
 
@@ -509,7 +685,7 @@ body::after {
 ul li {
 	list-style-type: none;
 	float: left;
-	margin: 10px 10px 15px 25px
+	margin: 15px 35px 25px 50px  /* ✅ 保持大间距，容器会自动适应 */
 }
 
 
@@ -519,29 +695,36 @@ ul li {
 
 div ul li a,div ul li a strong,ul li {
 	display: block;
-	width: 128px
+	width: 112px  /* ✅ 从128px改为112px，匹配图标尺寸 */
 }
 
 /* 统一图标尺寸 */
 div ul li a img {
-	width: 128px !important;
-	height: 128px !important;
+	width: 112px !important;
+	height: 112px !important;
 	object-fit: contain;
 	margin: 0 auto;
 	display: block;
 	border-radius: 0;
-	transition: all 0.3s ease;
+	transition: all 0.15s ease;  /* ✅ 加快到150毫秒，更流畅 */
 }
 
 div ul li a:hover img {
-	transform: translateY(-6px) scale(1.05);
-	filter: drop-shadow(0 6px 12px rgba(0, 0, 0, 0.45));
+	/* ✅ 蓝色阴影，内浅外深 */
+	transform: scale(1.05);
+	filter:
+		drop-shadow(0 2px 4px rgba(0, 196, 255, 0.3))   /* ✅ 减小内层阴影 */
+		drop-shadow(0 4px 10px rgba(0, 136, 255, 0.5))  /* ✅ 减小外层阴影 */
+		brightness(0.7);  /* ✅ 悬浮时变暗 */
 }
 
-/* 编辑模式下禁用应用图标悬浮效果 */
+/* 编辑模式下应用图标悬浮效果 */
 body.edit-mode div ul li a:hover img {
-	transform: none;
-	filter: none;
+	transform: scale(1.05);  /* ✅ 保持放大效果 */
+	filter:
+		drop-shadow(0 2px 4px rgba(0, 196, 255, 0.3))   /* ✅ 减小内层阴影 */
+		drop-shadow(0 4px 10px rgba(0, 136, 255, 0.5))  /* ✅ 减小外层阴影 */
+		brightness(0.7);  /* ✅ 悬浮时变暗 */
 }
 
 div ul li a:visited,ul li a:active,ul li a:link {
@@ -561,6 +744,85 @@ ul li a strong {
 	line-height: 32px
 }
 
+/* 浅色模式 - 提升对比度以符合 WCAG AA 标准 */
+@media (prefers-color-scheme: light) {
+  ul li a strong {
+    color: #FFF;  /* ✅ 始终保持白色，在深色背景上可见 */
+    text-shadow: none;
+  }
+
+  body {
+    background: linear-gradient(135deg, #E0F2FE, #F0ABFC) no-repeat fixed; /* 浅色渐变 */
+  }
+
+  /* 应用卡片在浅色模式下更明显 */
+  .app-item {
+    /* background: rgba(255, 255, 255, 0.8); */  /* ✅ 已移除背景 */
+  }
+
+  /* 搜索框在浅色模式下 */
+  #search-box {
+    background: rgba(255, 255, 255, 0.95);
+  }
+
+  #search-input {
+    color: #1E293B;
+  }
+
+  #search-input::placeholder {
+    color: #94A3B8;
+  }
+
+  /* 控制面板在浅色模式下 */
+  .control-panel {
+    background: rgba(255, 255, 255, 0.8);
+    border-color: rgba(0, 0, 0, 0.1);
+  }
+
+  .switch-btn {
+    color: rgba(0, 0, 0, 0.7);
+  }
+
+  .switch-btn.active {
+    color: #fff;
+    background: #2563EB;
+  }
+
+  /* 编辑按钮在浅色模式下 */
+  .edit-btn-new {
+    background: rgba(0, 0, 0, 0.05);
+    color: rgba(0, 0, 0, 0.8);
+  }
+
+  .edit-btn-new:hover {
+    background: rgba(0, 0, 0, 0.1);
+  }
+
+  /* 分页按钮在浅色模式下 */
+  .page-arrow {
+    color: #1E293B;
+    text-shadow: 0 0 6px rgba(255, 255, 255, 0.8);
+  }
+
+  /* Logo 文字在浅色模式下 */
+  #logo h1 {
+    color: #0F172A;
+    text-shadow: 0 0 10px rgba(255, 255, 255, 0.8);
+  }
+
+  /* Footer 链接在浅色模式下 */
+  #admin-link {
+    color: #FFF;  /* ✅ 始终使用白色，在深色背景上可见 */
+    border-color: rgba(255, 255, 255, 0.3);
+    background: rgba(0, 0, 0, 0.3);
+  }
+
+  #admin-link:hover {
+    background: rgba(0, 0, 0, 0.5);
+    border-color: rgba(255, 255, 255, 0.5);
+  }
+}
+
 #footer {
 	width: 100%;
 	height: 50px;
@@ -573,7 +835,7 @@ ul li a strong {
 	color: #fff;
 	color: rgba(255,255,255,.8);
 	overflow: visible!important;
-	z-index: 100;
+	z-index: var(--z-always-on-top);
 }
 
 .footer-contents {
@@ -627,7 +889,7 @@ ul li a strong {
 
 /* 悬浮光晕效果 */
 .shake:hover {
-	filter: drop-shadow(0 0 5px rgba(255, 255, 255, 0.8)) drop-shadow(0 0 10px rgba(255, 255, 255, 0.4));
+	filter: drop-shadow(0 0 5px rgba(0, 196, 255, 0.8)) drop-shadow(0 0 10px rgba(0, 136, 255, 0.4));
 	transform: none;
 }
 
@@ -724,6 +986,63 @@ body.edit-mode .app-item:not(.add-app-item-inner):hover {
 	border: none !important;
 }
 
+/* ========================================
+   编辑模式视觉反馈增强
+   ======================================== */
+
+/* 编辑模式下全局提示 */
+body.edit-mode {
+  /* 添加全局编辑模式提示 */
+}
+
+body.edit-mode .control-panel {
+  background: rgba(76, 175, 80, 0.25) !important;  /* ✅ 绿色提示 */
+  border-color: rgba(76, 175, 80, 0.5) !important;
+  box-shadow: 0 8px 32px rgba(76, 175, 80, 0.3) !important;
+}
+
+body.edit-mode .edit-btn-new {
+  background: rgba(76, 175, 80, 0.3) !important;
+  color: #ffffff !important;
+  box-shadow: 0 4px 12px rgba(76, 175, 80, 0.4) !important;
+}
+
+body.edit-mode .edit-btn-new:hover {
+  background: rgba(76, 175, 80, 0.4) !important;
+  transform: translateY(-1px) !important;
+}
+
+/* 编辑模式下应用列表边框提示 */
+body.edit-mode #app,
+body.edit-mode #app1 {
+  border: none;  /* ✅ 已隐藏绿色虚线边框 */
+  padding: 0;
+  margin: 0;
+}
+
+/* 编辑模式提示文字 */
+body.edit-mode::after {
+  display: none;  /* ✅ 已隐藏 */
+}
+
+@keyframes slideUpFade {
+  from {
+    opacity: 0;
+    transform: translateX(-50%) translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+  }
+}
+
+/* 移动端隐藏提示文字 */
+@media (max-width: 768px) {
+  body.edit-mode::after {
+    display: none;
+  }
+}
+
 .icon-picker-toggle {
   border: 1px solid rgba(255,255,255,0.25);
   border-radius: 999px;
@@ -788,8 +1107,8 @@ body.edit-mode .app-item:not(.add-app-item-inner):hover {
 /* 控制面板样式 */
 .control-panel {
   position: fixed;
-  top: 50px;
-  right: 4%;
+  top: 16px;  /* ✅ 添加顶部间距，悬浮效果 */
+  right: 16px;  /* ✅ 添加右侧间距 */
   display: flex;
   align-items: center;
   gap: 12px;
@@ -797,9 +1116,20 @@ body.edit-mode .app-item:not(.add-app-item-inner):hover {
   backdrop-filter: blur(20px);
   border: 1px solid rgba(255, 255, 255, 0.2);
   border-radius: 12px;
-  padding: 8px;
+  padding: 12px;  /* ✅ 增加内边距 */
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
-  z-index: 100;
+  z-index: var(--z-fixed, 100);
+  transition: all 0.3s ease;
+}
+
+/* 移动端调整 */
+@media (max-width: 768px) {
+  .control-panel {
+    top: 12px;
+    right: 12px;
+    padding: 8px;
+    gap: 8px;
+  }
 }
 
 /* 模式切换器样式 */
@@ -822,7 +1152,8 @@ body.edit-mode .app-item:not(.add-app-item-inner):hover {
   cursor: pointer;
   border-radius: 6px;
   transition: all 0.3s ease;
-  z-index: 2;
+  z-index: var(--z-base);
+  position: relative;
 }
 
 .switch-btn.active {
@@ -861,7 +1192,8 @@ body.edit-mode .app-item:not(.add-app-item-inner):hover {
 }
 
 .edit-icon {
-  font-size: 14px;
+  width: 16px;
+  height: 16px;
   transition: all 0.3s ease;
 }
 
@@ -895,14 +1227,14 @@ body.edit-mode .app-item:not(.add-app-item-inner):hover {
 
 @media screen and (min-width:1200px) {
 	#wrap {
-		width: 1024px;
+		width: 1100px;  /* ✅ 增加到1100px */
 		height: 900px
 	}
 }
 
 @media screen and (min-width:960px) and (max-width:1199px) {
 	#wrap {
-		width: 1024px
+		width: 1100px  /* ✅ 统一为1100px */
 	}
 }
 
@@ -988,7 +1320,9 @@ body.edit-mode .app-item:not(.add-app-item-inner):hover {
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.18);
   backdrop-filter: blur(10px);
   height: 64px;
-  z-index: 10;
+  width: 600px;  /* ✅ 减小搜索框宽度 */
+  max-width: 90%;  /* 响应式：小屏幕自适应 */
+  z-index: var(--z-dropdown);
 }
 
 
@@ -1076,7 +1410,7 @@ body.edit-mode .app-item:not(.add-app-item-inner):hover {
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
   border: 1px solid rgba(0, 0, 0, 0.1);
   padding: 4px;
-  z-index: 9999;
+  z-index: var(--z-popover);
   opacity: 0;
   visibility: hidden;
   transform: translateY(-10px);

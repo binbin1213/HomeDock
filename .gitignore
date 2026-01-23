@@ -3,6 +3,15 @@
 Thumbs.db
 .idea/
 .vscode/
+.agents/
+.claude/
+.kiro
+.opencode/
+.serena/
+.trae/
+.windsurf/
+.codex/
+.github/
 
 # Python / 虚拟环境
 __pycache__/

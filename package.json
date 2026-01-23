@@ -1,27 +1,47 @@
 {
   "name": "homedock",
-  "version": "1.0.0",
+  "version": "2.0.0",
   "description": "HomeDock - NAS / 家庭服务器起始页与导航面板",
   "main": "index.html",
   "scripts": {
     "dev": "vercel dev",
-    "build": "echo 'No build required for static site'",
-    "start": "echo 'Use vercel dev to start local server'"
+    "build": "./build.sh all",
+    "build:css": "postcss css/*.css --dir dist/css --use cssnano --config postcss.config.js",
+    "build:js": "node esbuild.config.js",
+    "build:watch": "npm run build && chokidar 'css/**/*.css' 'js/**/*.js' -c 'npm run build'",
+    "build:quick": "./build.sh css && ./build.sh js",
+    "test": "npm run build && npm run test:lighthouse",
+    "test:lighthouse": "lighthouse http://localhost:3000 --view",
+    "test:performance": "node scripts/test-performance.js",
+    "optimize:images": "node scripts/optimize-images.js",
+    "clean": "./build.sh clean",
+    "start": "echo 'Use \"npm run dev\" to start local server'",
+    "serve": "cd dist && python3 -m http.server 8080"
   },
   "keywords": [
     "homepage",
     "dashboard",
     "nas",
     "startpage",
-    "bookmark-manager"
+    "bookmark-manager",
+    "performance",
+    "optimization"
   ],
   "author": "binbin1213",
   "license": "MIT",
   "dependencies": {
     "@vercel/kv": "^3.0.0"
   },
-  "devDependencies": {},
+  "devDependencies": {
+    "postcss": "^8.4.35",
+    "postcss-cli": "^11.0.0",
+    "cssnano": "^6.0.3",
+    "esbuild": "^0.19.11",
+    "chokidar-cli": "^3.0.0"
+  },
   "engines": {
     "node": ">=18"
   }
 }
+
+

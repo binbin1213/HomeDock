@@ -13,36 +13,36 @@
 
         body {
             font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-            background: #111827;
+            background: #e8e8e8;
             min-height: 100vh;
             padding: 32px 16px;
-            color: #e5e7eb;
+            color: #1f2937;
         }
 
         .container {
             max-width: 1100px;
             margin: 0 auto;
-            background: #111827;
+            background: #e8e8e8;
             border-radius: 16px;
-            border: 1px solid #1f2937;
-            box-shadow: 0 14px 30px rgba(15, 23, 42, 0.7);
+            border: 1px solid #d1d5db;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
             overflow: hidden;
         }
 
         .header {
             padding: 18px 24px;
-            border-bottom: 1px solid #1f2937;
+            border-bottom: 1px solid #e5e7eb;
         }
 
         .header h1 {
             font-size: 18px;
             margin-bottom: 4px;
-            color: #e5e7eb;
+            color: #1f2937;
         }
 
         .header p {
             font-size: 13px;
-            color: #9ca3af;
+            color: #6b7280;
         }
 
         .content {
@@ -63,15 +63,15 @@
 
         .section-title {
             font-size: 18px;
-            color: #f0f0f0;
+            color: #1f2937;
             margin-bottom: 16px;
             padding-bottom: 8px;
-            border-bottom: 1px solid #3a3a3a;
+            border-bottom: 1px solid #e5e7eb;
         }
 
         .add-app-btn {
-            background: #4b5563;
-            color: #e5e7eb;
+            background: #3b8cff;
+            color: #f5f5f5;
             border: none;
             padding: 8px 16px;
             border-radius: 999px;
@@ -79,10 +79,16 @@
             font-size: 13px;
             font-weight: 500;
             margin-bottom: 18px;
+            transition: background-color 0.2s ease, transform 0.1s ease;
         }
 
         .add-app-btn:hover {
-            background: #6b7280;
+            background: #2f79dd;
+            transform: translateY(-1px);
+        }
+
+        .add-app-btn:active {
+            transform: translateY(0);
         }
 
         .app-list {
@@ -92,17 +98,18 @@
         }
 
         .app-item {
-            background: #111827;
-            border: 1px solid #1f2937;
+            background: #ffffff;
+            border: 1px solid #e5e7eb;
             border-radius: 12px;
             padding: 16px;
             transition: border-color 0.15s ease, box-shadow 0.15s ease, transform 0.15s ease;
         }
 
         .app-item:hover {
-            border-color: #4b5563;
-            box-shadow: 0 8px 18px rgba(15, 23, 42, 0.7);
+            border-color: #d1d5db;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
             transform: translateY(-1px);
+            background: #fafafa;
         }
 
         .app-info {
@@ -112,21 +119,22 @@
         }
 
         .app-icon {
-            width: 48px;
-            height: 48px;
-            border-radius: 8px;
+            width: 64px;
+            height: 64px;
+            border-radius: 10px;
             margin-right: 15px;
             object-fit: cover;
+            border: 1px solid #e5e7eb;
         }
 
         .app-details h4 {
-            color: #f2f2f2;
+            color: #1f2937;
             margin-bottom: 4px;
             font-size: 15px;
         }
 
         .app-url {
-            color: #b0b0b0;
+            color: #6b7280;
             font-size: 12px;
             word-break: break-all;
         }
@@ -177,16 +185,16 @@
         }
 
         .modal-content {
-            background: #111827;
+            background: #ffffff;
             margin: 40px auto;
             padding: 24px 24px 20px;
             border-radius: 14px;
             width: 90%;
             max-width: 480px;
             position: relative;
-            color: #e5e7eb;
-            border: 1px solid #1f2937;
-            box-shadow: 0 14px 30px rgba(15, 23, 42, 0.8);
+            color: #1f2937;
+            border: 1px solid #e5e7eb;
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
         }
 
         .close {
@@ -196,11 +204,21 @@
             font-size: 28px;
             font-weight: bold;
             cursor: pointer;
-            color: #aaa;
+            color: #6b7280;
+            width: 44px;
+            height: 44px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            background: transparent;
+            border: none;
+            transition: background 0.2s ease, color 0.2s ease;
         }
 
         .close:hover {
-            color: #000;
+            color: #1f2937;
+            background: rgba(0,0,0,0.05);
         }
 
         .form-group {
@@ -211,30 +229,36 @@
             display: block;
             margin-bottom: 6px;
             font-weight: 400;
-            color: #cfcfcf;
+            color: #374151;
             font-size: 13px;
+        }
+
+        .form-group label.required::after {
+            content: ' *';
+            color: #ef4444;
+            font-weight: 500;
         }
 
         .form-group input {
             width: 100%;
             padding: 10px 14px;
-            border: 1px solid #555555;
+            border: 1px solid #d1d5db;
             border-radius: 8px;
             font-size: 13px;
-            background-color: #1f1f1f;
-            color: #f0f0f0;
+            background-color: #ffffff;
+            color: #1f2937;
             transition: border-color 0.2s ease, box-shadow 0.2s ease;
         }
 
         .form-group input:focus {
             outline: none;
-            border-color: #00c4ff;
-            box-shadow: 0 0 0 1px rgba(0,196,255,0.6);
+            border-color: #3b8cff;
+            box-shadow: 0 0 0 3px rgba(59, 140, 255, 0.1);
         }
 
         .save-btn {
-            background: #4b5563;
-            color: #e5e7eb;
+            background: #3b8cff;
+            color: #f5f5f5;
             border: none;
             padding: 10px 20px;
             border-radius: 999px;
@@ -243,16 +267,22 @@
             font-weight: 500;
             width: 100%;
             margin-top: 6px;
+            transition: background-color 0.2s ease, transform 0.1s ease;
         }
 
         .save-btn:hover {
-            background: #6b7280;
+            background: #2f79dd;
+            transform: translateY(-1px);
+        }
+
+        .save-btn:active {
+            transform: translateY(0);
         }
 
         .back-btn {
             background: transparent;
-            color: #e4e4e4;
-            border: 1px solid rgba(255,255,255,0.2);
+            color: #374151;
+            border: 1px solid #d1d5db;
             padding: 8px 16px;
             border-radius: 999px;
             cursor: pointer;
@@ -260,10 +290,12 @@
             margin-bottom: 18px;
             text-decoration: none;
             display: inline-block;
+            transition: background 0.2s ease, border-color 0.2s ease;
         }
 
         .back-btn:hover {
-            background: rgba(255,255,255,0.08);
+            background: #f9fafb;
+            border-color: #9ca3af;
         }
 
         .status {
@@ -291,7 +323,7 @@
         }
 
         .bulk-section-desc {
-            color: #b0b0b0;
+            color: #6b7280;
             font-size: 0.9em;
             margin-bottom: 12px;
         }
@@ -309,49 +341,86 @@
             cursor: pointer;
             font-size: 0.85em;
             font-weight: 500;
-            border: 1px solid #4b5563;
+            border: 1px solid #d1d5db;
             background: transparent;
-            color: #e5e7eb;
+            color: #374151;
+            transition: background-color 0.2s ease, transform 0.1s ease;
+        }
+
+        .bulk-btn:hover {
+            background: #f9fafb;
+            transform: translateY(-1px);
         }
 
         .bulk-btn.primary {
             border: none;
-            background: #4b5563;
-            color: #e5e7eb;
+            background: #3b8cff;
+            color: #ffffff;
+        }
+
+        .bulk-btn.primary:hover {
+            background: #2f79dd;
         }
 
         .bulk-btn.import {
             border: none;
-            background: #4b5563;
-            color: #e5e7eb;
+            background: #10b981;
+            color: #ffffff;
+        }
+
+        .bulk-btn.import:hover {
+            background: #059669;
         }
 
         .bulk-table {
             width: 100%;
             border-collapse: collapse;
             font-size: 0.9em;
+            border: 1px solid #e5e7eb;
+            border-radius: 8px;
+            overflow: hidden;
         }
 
         .bulk-table th,
         .bulk-table td {
-            border: 1px solid #e9ecef;
-            padding: 8px;
+            border: 1px solid #e5e7eb;
+            padding: 12px 10px;
             text-align: left;
         }
 
+        .bulk-table thead tr {
+            background: #f9fafb;
+        }
+
         .bulk-table th {
-            background: #111827;
-            color: #e5e7eb;
+            background: #f9fafb;
+            color: #374151;
+            font-weight: 500;
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .bulk-table tbody tr {
+            transition: background-color 0.15s ease;
+        }
+
+        .bulk-table tbody tr:hover {
+            background: #f9fafb;
+        }
+
+        .bulk-table tbody tr:hover td {
+            background: transparent;
         }
 
         .bulk-table input {
             width: 100%;
-            border: 1px solid #4b5563;
+            border: 1px solid #d1d5db;
             border-radius: 4px;
             padding: 6px 8px;
             font-size: 0.9em;
-            background: #111827;
-            color: #e5e7eb;
+            background: #ffffff;
+            color: #1f2937;
         }
 
         .bulk-icon-wrapper {
@@ -368,10 +437,10 @@
             width: 28px;
             height: 28px;
             border-radius: 6px;
-            border: 1px solid #4b5563;
+            border: 1px solid #d1d5db;
             background-size: cover;
             background-position: center;
-            background-color: #111827;
+            background-color: #f3f4f6;
         }
 
         .bulk-icon-preview.bulk-icon-empty {
@@ -381,13 +450,14 @@
 
         .bulk-icon-btn {
             border: none;
-            background: #374151;
-            color: #e5e7eb;
+            background: #6b7280;
+            color: #ffffff;
             border-radius: 999px;
             padding: 4px 8px;
             font-size: 0.75em;
             cursor: pointer;
             white-space: nowrap;
+            transition: background 0.2s ease;
         }
 
         .bulk-icon-btn:hover {
@@ -405,18 +475,24 @@
         }
 
         .icon-picker-toggle {
-            border: 1px solid rgba(255,255,255,0.25);
+            border: 1px solid #d1d5db;
             border-radius: 999px;
             padding: 6px 12px;
             background: transparent;
-            color: #dddddd;
+            color: #374151;
             font-size: 12px;
             cursor: pointer;
             margin-top: 8px;
+            transition: background 0.2s ease, transform 0.1s ease;
         }
 
         .icon-picker-toggle:hover {
-            background: rgba(255,255,255,0.06);
+            background: #f9fafb;
+            transform: translateY(-1px);
+        }
+
+        .icon-picker-toggle:active {
+            transform: translateY(0);
         }
 
         .icon-picker {
@@ -424,9 +500,9 @@
             max-height: 220px;
             overflow-y: auto;
             border-radius: 10px;
-            border: 1px solid #3a3a3a;
+            border: 1px solid #e5e7eb;
             padding: 10px;
-            background: #222222;
+            background: #f9fafb;
             display: none;
         }
 
@@ -455,20 +531,20 @@
 
         .icon-picker-item span {
             font-size: 11px;
-            color: #d0d0d0;
+            color: #4b5563;
             text-align: center;
         }
 
         .icon-picker-item:hover {
-            background: #303030;
+            background: #ffffff;
             transform: translateY(-1px);
-            box-shadow: 0 4px 12px rgba(0,0,0,0.4);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
         }
 
         .form-hint {
             margin-top: 6px;
             font-size: 12px;
-            color: #9a9a9a;
+            color: #6b7280;
         }
 
         .bg-section {
@@ -480,7 +556,7 @@
             flex-wrap: wrap;
             gap: 8px;
             font-size: 13px;
-            color: #d0d0d0;
+            color: #374151;
         }
 
         .bg-mode-option {
@@ -499,18 +575,18 @@
             justify-content: center;
             padding: 6px 14px;
             border-radius: 999px;
-            border: 1px solid #4b5563;
-            background: #111827;
-            color: #e5e7eb;
+            border: 1px solid #d1d5db;
+            background: #ffffff;
+            color: #374151;
             cursor: pointer;
             transition: background 0.18s ease, border-color 0.18s ease, color 0.18s ease;
             min-width: 96px;
         }
 
         .bg-mode-option input:checked + span {
-            background: #4b5563;
-            border-color: #6b7280;
-            color: #f9fafb;
+            background: #3b8cff;
+            border-color: #3b8cff;
+            color: #ffffff;
         }
 
         .bg-color-row {
@@ -525,8 +601,8 @@
             height: 28px;
             padding: 0;
             border-radius: 6px;
-            border: 1px solid #555555;
-            background: #1f1f1f;
+            border: 1px solid #d1d5db;
+            background: #ffffff;
         }
 
         .bg-color-row input[type="text"] {
@@ -546,7 +622,7 @@
 
         .bg-color-row span {
             font-size: 12px;
-            color: #a0a0a0;
+            color: #6b7280;
             width: 30px;
         }
 
@@ -554,8 +630,81 @@
             width: 100%;
             height: 52px;
             border-radius: 12px;
-            border: 1px solid #4b5563;
+            border: 1px solid #d1d5db;
             box-shadow: none;
+        }
+
+        /* Loading state */
+        .loading {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            color: #6b7280;
+            font-size: 13px;
+        }
+
+        .loading-spinner {
+            width: 16px;
+            height: 16px;
+            border: 2px solid #e5e7eb;
+            border-top-color: #3b8cff;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* Search box */
+        .search-box {
+            margin-bottom: 20px;
+            position: relative;
+        }
+
+        .search-box input {
+            width: 100%;
+            padding: 10px 14px 10px 38px;
+            border: 1px solid #d1d5db;
+            border-radius: 8px;
+            font-size: 13px;
+            background-color: #ffffff;
+            color: #1f2937;
+            transition: border-color 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .search-box input:focus {
+            outline: none;
+            border-color: #3b8cff;
+            box-shadow: 0 0 0 3px rgba(59, 140, 255, 0.1);
+        }
+
+        .search-box::before {
+            content: '🔍';
+            position: absolute;
+            left: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 14px;
+            opacity: 0.5;
+        }
+
+        /* Card grouping for background settings */
+        .settings-card {
+            background: #f9fafb;
+            border: 1px solid #e5e7eb;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+
+        .settings-card-title {
+            font-size: 14px;
+            font-weight: 500;
+            color: #1f2937;
+            margin-bottom: 16px;
+            padding-bottom: 12px;
+            border-bottom: 1px solid #e5e7eb;
         }
 
         @media (max-width: 768px) {
@@ -589,6 +738,9 @@
             <div id="external-content" class="tab-content active">
                 <div class="app-section">
                     <h2 class="section-title">应用列表</h2>
+                    <div class="search-box">
+                        <input type="text" id="appSearch" placeholder="搜索应用名称或URL..." oninput="filterApps()">
+                    </div>
                     <button class="add-app-btn" onclick="openAddModal()">+ 添加应用</button>
                     <div id="app-list" class="app-list"></div>
                 </div>
@@ -617,72 +769,85 @@
 
                 <div class="app-section bg-section">
                     <h2 class="section-title">背景设置</h2>
-                    <div class="form-group">
-                        <label>背景模式:</label>
-                        <div class="bg-mode-group">
-                            <label class="bg-mode-option">
-                                <input type="radio" name="bgMode" value="wallpaper" id="bgModeWallpaper">
-                                <span>必应每日壁纸</span>
-                            </label>
-                            <label class="bg-mode-option">
-                                <input type="radio" name="bgMode" value="solid" id="bgModeSolid">
-                                <span>纯色背景</span>
-                            </label>
-                            <label class="bg-mode-option">
-                                <input type="radio" name="bgMode" value="gradient" id="bgModeGradient">
-                                <span>渐变背景</span>
-                            </label>
-                        </div>
-                    </div>
 
-                    <div class="form-group">
-                        <label>背景模糊效果:</label>
-                        <div class="bg-mode-group">
-                            <label class="bg-mode-option">
-                                <input type="radio" name="bgBlur" value="none" id="bgBlurNone">
-                                <span>无模糊</span>
-                            </label>
-                            <label class="bg-mode-option">
-                                <input type="radio" name="bgBlur" value="light" id="bgBlurLight">
-                                <span>轻度模糊</span>
-                            </label>
-                            <label class="bg-mode-option">
-                                <input type="radio" name="bgBlur" value="medium" id="bgBlurMedium">
-                                <span>中度模糊</span>
-                            </label>
-                            <label class="bg-mode-option">
-                                <input type="radio" name="bgBlur" value="heavy" id="bgBlurHeavy">
-                                <span>深度模糊</span>
-                            </label>
-                        </div>
-                        <div class="form-hint">选择背景模糊效果来优化视觉体验。轻度模糊保持背景细节，中度模糊提高内容可读性，深度模糊营造氛围感。</div>
-                    </div>
-
-                    <div class="form-group" id="bg-solid-settings">
-                        <label for="bgSolidColor">纯色背景颜色:</label>
-                        <div class="bg-color-row">
-                            <input type="color" id="bgSolidColor">
-                            <input type="text" id="bgSolidColorText" placeholder="#202124">
-                        </div>
-                        <div class="form-hint">支持十六进制颜色，例如 #202124。</div>
-                    </div>
-
-                    <div class="form-group" id="bg-gradient-settings">
-                        <label>渐变颜色:</label>
-                        <div class="bg-gradient-inputs">
-                            <div class="bg-color-row">
-                                <span>起始</span>
-                                <input type="color" id="bgGradientFrom">
-                                <input type="text" id="bgGradientFromText" placeholder="#141e30">
-                            </div>
-                            <div class="bg-color-row">
-                                <span>结束</span>
-                                <input type="color" id="bgGradientTo">
-                                <input type="text" id="bgGradientToText" placeholder="#243b55">
+                    <div class="settings-card">
+                        <div class="settings-card-title">背景模式</div>
+                        <div class="form-group">
+                            <label>背景模式:</label>
+                            <div class="bg-mode-group">
+                                <label class="bg-mode-option">
+                                    <input type="radio" name="bgMode" value="wallpaper" id="bgModeWallpaper">
+                                    <span>必应每日壁纸</span>
+                                </label>
+                                <label class="bg-mode-option">
+                                    <input type="radio" name="bgMode" value="solid" id="bgModeSolid">
+                                    <span>纯色背景</span>
+                                </label>
+                                <label class="bg-mode-option">
+                                    <input type="radio" name="bgMode" value="gradient" id="bgModeGradient">
+                                    <span>渐变背景</span>
+                                </label>
                             </div>
                         </div>
-                        <div class="bg-preview" id="bgPreview"></div>
-                        <div class="form-hint">渐变方向固定为 135°，首页会按这里的颜色渲染背景。</div>
+                    </div>
+
+                    <div class="settings-card">
+                        <div class="settings-card-title">模糊效果</div>
+                        <div class="form-group">
+                            <label>背景模糊效果:</label>
+                            <div class="bg-mode-group">
+                                <label class="bg-mode-option">
+                                    <input type="radio" name="bgBlur" value="none" id="bgBlurNone">
+                                    <span>无模糊</span>
+                                </label>
+                                <label class="bg-mode-option">
+                                    <input type="radio" name="bgBlur" value="light" id="bgBlurLight">
+                                    <span>轻度模糊</span>
+                                </label>
+                                <label class="bg-mode-option">
+                                    <input type="radio" name="bgBlur" value="medium" id="bgBlurMedium">
+                                    <span>中度模糊</span>
+                                </label>
+                                <label class="bg-mode-option">
+                                    <input type="radio" name="bgBlur" value="heavy" id="bgBlurHeavy">
+                                    <span>深度模糊</span>
+                                </label>
+                            </div>
+                            <div class="form-hint">选择背景模糊效果来优化视觉体验。轻度模糊保持背景细节，中度模糊提高内容可读性，深度模糊营造氛围感。</div>
+                        </div>
+                    </div>
+
+                    <div class="settings-card" id="bg-solid-settings" style="display: none;">
+                        <div class="settings-card-title">纯色背景</div>
+                        <div class="form-group">
+                            <label for="bgSolidColor">纯色背景颜色:</label>
+                            <div class="bg-color-row">
+                                <input type="color" id="bgSolidColor">
+                                <input type="text" id="bgSolidColorText" placeholder="#202124">
+                            </div>
+                            <div class="form-hint">支持十六进制颜色，例如 #202124。</div>
+                        </div>
+                    </div>
+
+                    <div class="settings-card" id="bg-gradient-settings" style="display: none;">
+                        <div class="settings-card-title">渐变背景</div>
+                        <div class="form-group">
+                            <label>渐变颜色:</label>
+                            <div class="bg-gradient-inputs">
+                                <div class="bg-color-row">
+                                    <span>起始</span>
+                                    <input type="color" id="bgGradientFrom">
+                                    <input type="text" id="bgGradientFromText" placeholder="#141e30">
+                                </div>
+                                <div class="bg-color-row">
+                                    <span>结束</span>
+                                    <input type="color" id="bgGradientTo">
+                                    <input type="text" id="bgGradientToText" placeholder="#243b55">
+                                </div>
+                            </div>
+                            <div class="bg-preview" id="bgPreview"></div>
+                            <div class="form-hint">渐变方向固定为 135°，首页会按这里的颜色渲染背景。</div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -696,7 +861,7 @@
             <h2 id="modalTitle">添加应用</h2>
             <form id="appForm">
                 <div class="form-group">
-                    <label for="appName">应用名称:</label>
+                    <label for="appName" class="required">应用名称:</label>
                     <input type="text" id="appName" required>
                 </div>
                 <div class="form-group">
@@ -729,6 +894,20 @@
 
         const CONFIG_KEY = 'homedock-config';
 
+        // 显示加载状态
+        function showLoading(message = '加载中...') {
+            const statusDiv = document.getElementById('status');
+            statusDiv.innerHTML = `<div class="loading"><div class="loading-spinner"></div>${message}</div>`;
+            statusDiv.className = 'status';
+            statusDiv.style.display = 'block';
+        }
+
+        // 隐藏加载状态
+        function hideLoading() {
+            const statusDiv = document.getElementById('status');
+            statusDiv.style.display = 'none';
+        }
+
         function triggerCustomIconUpload() {
             const input = document.getElementById('customIconFile');
             if (input) {
@@ -737,6 +916,7 @@
         }
 
         async function loadConfig() {
+            showLoading('正在加载配置...');
             try {
                 const remote = await loadConfigFromServer();
                 if (remote) {
@@ -757,7 +937,9 @@
                 ensureBackgroundConfig();
                 renderApps();
                 initBackgroundForm();
+                hideLoading();
             } catch (error) {
+                hideLoading();
                 showStatus('加载配置失败: ' + error.message, 'error');
             }
         }
@@ -766,10 +948,38 @@
         function renderApps() {
             const container = document.getElementById('app-list');
             const apps = config.applications;
-            
+
             container.innerHTML = '';
             apps.forEach((app, index) => {
                 const appItem = createAppItem(app, index);
+                container.appendChild(appItem);
+            });
+        }
+
+        // 过滤应用列表
+        function filterApps() {
+            const searchInput = document.getElementById('appSearch');
+            const container = document.getElementById('app-list');
+            const searchTerm = searchInput.value.toLowerCase().trim();
+
+            const apps = config.applications;
+            container.innerHTML = '';
+
+            const filteredApps = apps.filter(app => {
+                const nameMatch = app.name && app.name.toLowerCase().includes(searchTerm);
+                const externalUrlMatch = app.external_url && app.external_url.toLowerCase().includes(searchTerm);
+                const internalUrlMatch = app.internal_url && app.internal_url.toLowerCase().includes(searchTerm);
+                return nameMatch || externalUrlMatch || internalUrlMatch;
+            });
+
+            if (filteredApps.length === 0 && searchTerm !== '') {
+                container.innerHTML = '<div style="grid-column: 1/-1; text-align: center; color: #9ca3af; padding: 40px;">没有找到匹配的应用</div>';
+                return;
+            }
+
+            filteredApps.forEach((app, index) => {
+                const originalIndex = apps.indexOf(app);
+                const appItem = createAppItem(app, originalIndex);
                 container.appendChild(appItem);
             });
         }
@@ -1112,11 +1322,14 @@
         }
 
         async function saveConfig() {
+            showLoading('正在保存配置...');
             try {
                 localStorage.setItem(CONFIG_KEY, JSON.stringify(config));
                 await saveConfigToServer(config);
+                hideLoading();
                 showStatus('配置已保存', 'success');
             } catch (error) {
+                hideLoading();
                 showStatus('保存失败: ' + error.message, 'error');
             }
         }

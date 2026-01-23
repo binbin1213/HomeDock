@@ -7,10 +7,93 @@
     <meta name="renderer" content="webkit" />
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
     <link rel="shortcut icon" href="favicon.ico" />
+
+    <!-- ========================================
+       ✅ 关键 CSS 内联 - 首屏渲染必需 (~8KB)
+       ======================================== -->
+    <style>
+/* 基础重置 */
+*{margin:0;padding:0;box-sizing:border-box}
+img{border:0;vertical-align:middle}
+ul{margin:0;padding:0;border:none;list-style:none;font-size:12px}
+a{color:#fff;text-decoration:none}
+
+/* Body 和背景 */
+body{
+  height:100%;
+  font-size:100%;
+  background:linear-gradient(135deg,#00C4FF,#9D1BB2) no-repeat fixed;
+  overflow-x:hidden;
+  overflow-y:auto;
+  font-family:'Helvetica Neue','Microsoft Yahei',SimHei,sans-serif;
+  position:relative
+}
+
+/* 背景蒙层 */
+body::before{
+  content:'';
+  position:fixed;
+  top:0;left:0;right:0;bottom:0;
+  background:inherit;
+  filter:blur(4px);
+  z-index:-1
+}
+body::after{
+  content:'';
+  position:fixed;
+  top:0;left:0;right:0;bottom:0;
+  background:rgba(0,0,0,.15);
+  z-index:-1
+}
+
+/* 主容器 */
+#wrap{width:100%;height:100%;margin:0 auto;overflow:visible;position:relative;z-index:1}
+#top{margin-top:15%;width:100%;height:162px}
+#main{margin-top:6%}
+</style>
+
+    <!-- 主样式表（关键）同步加载 -->
     <link rel="stylesheet" type="text/css" href="css/style.css" />
-    <link rel="stylesheet" type="text/css" href="css/responsive.css" />
-    <link rel="stylesheet" type="text/css" href="css/drag-drop.css" />
-    <link rel="stylesheet" type="text/css" href="css/image-optimizer.css" />
+
+    <!-- 响应式 CSS（媒体查询条件加载） -->
+    <link rel="stylesheet" type="text/css" href="css/responsive.css" media="(max-width: 1024px)" />
+
+    <!-- ========================================
+       ✅ 非关键 CSS 异步加载
+       ======================================== -->
+
+    <!-- 拖拽功能 CSS - 仅在需要时加载 -->
+    <link rel="preload" href="css/drag-drop.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+    <noscript><link rel="stylesheet" href="css/drag-drop.css"></noscript>
+
+    <!-- 图片优化器 CSS - 仅在需要时加载 -->
+    <link rel="preload" href="css/image-optimizer.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+    <noscript><link rel="stylesheet" href="css/image-optimizer.css"></noscript>
+
+
+    <!-- ========================================
+       ✅ 资源预加载提示 (Resource Hints)
+       ======================================== -->
+
+    <!-- 预加载关键 CSS 文件 -->
+    <link rel="preload" href="css/style.css" as="style">
+    <link rel="preload" href="css/responsive.css" as="style">
+
+    <!-- 预加载关键 JavaScript 文件 -->
+    <link rel="preload" href="app.js" as="script">
+
+    <!-- 预加载搜索引擎图标 -->
+    <link rel="preload" href="img/baidu.svg" as="image" type="image/svg+xml">
+
+    <!-- DNS 预解析和预连接到搜索引擎域名 -->
+    <link rel="dns-prefetch" href="//www.bing.com">
+    <link rel="dns-prefetch" href="//www.google.com">
+    <link rel="dns-prefetch" href="//cn.bing.com">
+
+    <link rel="preconnect" href="https://www.bing.com">
+    <link rel="preconnect" href="https://www.google.com">
+    <link rel="preconnect" href="https://cn.bing.com">
+
 
     <!-- 安全策略 -->
     <meta http-equiv="Content-Security-Policy"
@@ -32,13 +115,26 @@
   
   <body>
     <div id="wrap">
-      <div id="control-panel" class="control-panel">
-        <div class="mode-switcher">
-            <button class="switch-btn switch-btn-left active" data-mode="external">OFFICE</button>
-            <button class="switch-btn switch-btn-right" data-mode="internal">HOME</button>
+      <div id="control-panel" class="control-panel" role="toolbar" aria-label="控制面板">
+        <div class="mode-switcher" role="group" aria-label="模式切换">
+            <button class="switch-btn switch-btn-left active"
+                    data-mode="external"
+                    aria-pressed="true"
+                    aria-label="外部应用模式">
+              OFFICE
+            </button>
+            <button class="switch-btn switch-btn-right"
+                    data-mode="internal"
+                    aria-pressed="false"
+                    aria-label="内部应用模式">
+              HOME
+            </button>
         </div>
-        <button id="edit-toggle-btn" class="edit-btn-new">
-            <span class="edit-icon">✏️</span>
+        <button id="edit-toggle-btn" class="edit-btn-new" aria-label="切换编辑模式" aria-pressed="false">
+            <svg class="edit-icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
+              <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
+            </svg>
             <span class="edit-text">编辑</span>
         </button>
       </div>
@@ -52,31 +148,59 @@
 			<div id="logo-display">
 				<img id="search-engine-logo" src="img/baidu.svg" alt="Search Engine" />
 			</div>
-			<div id="search-container" style="margin-top: 0;">
-				<div id="search-box">
-          <div id="search-engine-selector" class="search-engine-selector">
+			<div id="search-container" style="margin-top: 0;" role="search">
+				<div id="search-box" role="group" aria-label="搜索框">
+          <div id="search-engine-selector"
+               class="search-engine-selector"
+               tabindex="0"
+               role="combobox"
+               aria-expanded="false"
+               aria-haspopup="listbox"
+               aria-label="选择搜索引擎">
             <span id="current-engine-label">百度</span>
-            <svg id="dropdown-arrow" class="dropdown-arrow" width="12" height="12" viewBox="0 0 12 12" fill="none">
+            <svg id="dropdown-arrow" class="dropdown-arrow" width="12" height="12" viewBox="0 0 12 12" fill="none" aria-hidden="true">
               <path d="M2 4L6 8L10 4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
             </svg>
           </div>
           <div id="search-input-wrapper">
-				<input type="text" id="search-input" placeholder="输入搜索内容，按回车键搜索..." />
+				<input type="text"
+                       id="search-input"
+                       placeholder="输入搜索内容，按回车键搜索..."
+                       aria-label="搜索内容"
+                       autocomplete="off" />
           </div>
-          <button id="change-wallpaper-btn" type="button">换一张</button>
-          <select id="search-engine" style="display: none;">
+          <button id="change-wallpaper-btn"
+                  type="button"
+                  aria-label="更换壁纸">
+            换一张
+          </button>
+          <select id="search-engine"
+                  style="display: none;"
+                  aria-label="搜索引擎选择">
 						<option value="google">Google</option>
 						<option value="bing">Bing</option>
 						<option value="baidu" selected>百度</option>
 					</select>
-          <div id="search-engine-dropdown" class="search-engine-dropdown">
-            <div class="dropdown-item" data-engine="google">
+          <div id="search-engine-dropdown"
+               class="search-engine-dropdown"
+               role="listbox"
+               aria-label="搜索引擎列表">
+            <div class="dropdown-item"
+                 data-engine="google"
+                 role="option"
+                 tabindex="0">
               <span>Google</span>
             </div>
-            <div class="dropdown-item" data-engine="bing">
+            <div class="dropdown-item"
+                 data-engine="bing"
+                 role="option"
+                 tabindex="0">
               <span>Bing</span>
             </div>
-            <div class="dropdown-item" data-engine="baidu">
+            <div class="dropdown-item"
+                 data-engine="baidu"
+                 role="option"
+                 tabindex="0">
               <span>百度</span>
             </div>
           </div>
@@ -85,17 +209,27 @@
 			<div id="main">
 			<!-- 外网访问地址 -->
 				<div id="app" class="app animated fadeInLeft">
-					<ul id="external-apps">
+					<ul id="external-apps" role="list" aria-label="外部应用列表">
 						<!-- 应用列表将通过JavaScript动态生成 -->
 					</ul>
-					<button id="external-next-btn" class="page-arrow page-arrow-right">›</button>
+					<button id="external-next-btn"
+					        class="page-arrow page-arrow-right"
+					        aria-label="下一页外部应用"
+					        tabindex="0">
+            ›
+          </button>
 				</div>
 				<!-- 内网网访问地址 -->
 				<div id="app1" class="app animated fadeInRight">
-					<ul id="internal-apps">
+					<ul id="internal-apps" role="list" aria-label="内部应用列表">
 						<!-- 应用列表将通过JavaScript动态生成 -->
 					</ul>
-					<button id="internal-next-btn" class="page-arrow page-arrow-right">›</button>
+					<button id="internal-next-btn"
+					        class="page-arrow page-arrow-right"
+					        aria-label="下一页内部应用"
+					        tabindex="0">
+            ›
+          </button>
 				</div>
 				<div style="clear: both;"></div>
 			</div>
@@ -124,28 +258,11 @@
       };
     }
   </script>
-  <script src="js/utils/helpers.js" defer></script>
-  <script src="js/preset-icons.js" defer></script>
-  <script src="js/utils/notification.js" defer></script>
-  <script src="js/utils/service-worker.js" defer></script>
-  <script src="js/modules/config-manager.js" defer></script>
-  <script src="js/modules/app-renderer.js" defer></script>
-  <script src="js/modules/ui-controller.js" defer></script>
-  <script src="js/modules/search-engine.js" defer></script>
 
-  <!-- 非关键脚本延迟加载 -->
-  <script>
-    // 页面加载完成后延迟加载图片优化器
-    window.addEventListener('load', function() {
-      setTimeout(function() {
-        var script = document.createElement('script');
-        script.src = 'js/utils/image-optimizer.js';
-        script.defer = true;
-        document.head.appendChild(script);
-        console.log('✅ Image optimizer loaded asynchronously');
-      }, 2000); // 延迟 2 秒加载
-    });
-  </script>
+  <!-- ========================================
+     ✅ 关键 JavaScript（延迟加载，不阻塞渲染）
+     ======================================== -->
+  <script src="app.js" defer></script>
 
   <!-- 主应用初始化脚本 -->
   <script>
@@ -280,34 +397,80 @@
   </script>
 
   <!-- 编辑应用模态框 -->
-  <div id="editModal" class="edit-modal" style="display: none;">
+  <div id="editModal"
+       class="edit-modal"
+       style="display: none;"
+       role="dialog"
+       aria-modal="true"
+       aria-labelledby="modal-title"
+       aria-describedby="modal-description">
     <div class="edit-modal-content">
-      <span class="edit-modal-close">&times;</span>
-      <h2>编辑应用</h2>
-      <form id="editForm">
+      <button class="edit-modal-close"
+              aria-label="关闭对话框"
+              tabindex="0">
+        &times;
+      </button>
+      <h2 id="modal-title">编辑应用</h2>
+      <p id="modal-description" style="display:none;">编辑应用的名称、URL 和图标</p>
+      <form id="editForm"
+            aria-label="编辑应用表单"
+            novalidate>
         <div class="form-group">
           <label for="appName">应用名称：</label>
-          <input type="text" id="appName" name="appName" required>
+          <input type="text"
+                 id="appName"
+                 name="appName"
+                 required
+                 aria-required="true"
+                 autocomplete="off">
         </div>
         <div class="form-group">
           <label for="externalUrl">外部URL：</label>
-          <input type="url" id="externalUrl" name="externalUrl">
+          <input type="url"
+                 id="externalUrl"
+                 name="externalUrl"
+                 placeholder="https://"
+                 autocomplete="url">
         </div>
         <div class="form-group">
           <label for="internalUrl">内部URL：</label>
-          <input type="url" id="internalUrl" name="internalUrl">
+          <input type="url"
+                 id="internalUrl"
+                 name="internalUrl"
+                 placeholder="http://"
+                 autocomplete="url">
         </div>
         <div class="form-group">
           <label for="iconPath">图标路径：</label>
-          <input type="text" id="iconPath" name="iconPath">
-          <button type="button" id="iconPickerToggle" class="icon-picker-toggle">浏览预设图标</button>
-          <div id="iconPicker" class="icon-picker">
+          <input type="text"
+                 id="iconPath"
+                 name="iconPath"
+                 autocomplete="off">
+          <button type="button"
+                  id="iconPickerToggle"
+                  class="icon-picker-toggle"
+                  aria-expanded="false"
+                  aria-controls="iconPicker">
+            浏览预设图标
+          </button>
+          <div id="iconPicker"
+               class="icon-picker"
+               role="listbox"
+               aria-label="选择图标">
             <div class="icon-picker-grid" id="iconPickerGrid"></div>
           </div>
         </div>
         <div class="form-actions">
-          <button type="submit" class="btn-save">保存</button>
-          <button type="button" class="btn-cancel">取消</button>
+          <button type="submit"
+                  class="btn-save"
+                  aria-label="保存应用更改">
+            保存
+          </button>
+          <button type="button"
+                  class="btn-cancel"
+                  aria-label="取消编辑">
+            取消
+          </button>
         </div>
       </form>
     </div>

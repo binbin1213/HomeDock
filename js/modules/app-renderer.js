@@ -4,7 +4,7 @@
  */
 class AppRenderer {
   constructor() {
-    this.APPS_PER_PAGE = 12;
+    this.APPS_PER_PAGE = 15;  // ✅ 改为15个（3行×5列）
     this.externalPageIndex = 0;
     this.internalPageIndex = 0;
     this.editMode = false;
@@ -188,9 +188,10 @@ class AppRenderer {
       'data-app-index': index
     }, [
       DOM.create('a', {
-        href: Helpers.escapeUrl(url),
-        target: target,
-        rel: 'noopener noreferrer'
+        'data-url': Helpers.escapeUrl(url),  /* 存储URL在data属性中 */
+        'data-target': target,
+        role: 'button',  /* 语义化：这是一个按钮 */
+        tabindex: '0'  /* 可通过键盘聚焦 */
       }, [
         DOM.create('img', {
           className: 'shake',
@@ -202,6 +203,23 @@ class AppRenderer {
       ]),
       this.createEditButtons(index)
     ]);
+
+    // 添加点击事件处理导航
+    const link = appItemContent.querySelector('a');
+    if (link) {
+      DOM.on(link, 'click', (e) => {
+        e.preventDefault();
+        const url = link.getAttribute('data-url');
+        const target = link.getAttribute('data-target') || '_blank';
+        if (url && url !== '#' && url.trim() !== '') {
+          if (target === '_blank') {
+            window.open(url, '_blank', 'noopener,noreferrer');
+          } else {
+            window.location.href = url;
+          }
+        }
+      });
+    }
 
     // 添加右键菜单事件
     DOM.on(appItemContent, 'contextmenu', (e) => {
@@ -217,15 +235,30 @@ class AppRenderer {
    * 创建编辑按钮
    */
   createEditButtons(index) {
+    // 创建编辑按钮 SVG 图标
+    const editBtnIcon = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+    editBtnIcon.setAttribute('class', 'edit-icon-svg');
+    editBtnIcon.setAttribute('xmlns', 'http://www.w3.org/2000/svg');
+    editBtnIcon.setAttribute('width', '16');
+    editBtnIcon.setAttribute('height', '16');
+    editBtnIcon.setAttribute('viewBox', '0 0 24 24');
+    editBtnIcon.setAttribute('fill', 'none');
+    editBtnIcon.setAttribute('stroke', 'currentColor');
+    editBtnIcon.setAttribute('stroke-width', '2');
+    editBtnIcon.setAttribute('stroke-linecap', 'round');
+    editBtnIcon.setAttribute('stroke-linejoin', 'round');
+    editBtnIcon.innerHTML = '<path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>';
+
     const editBtn = DOM.create('button', {
       className: 'edit-btn icon-btn',
       style: 'display: none;'
-    }, ['✏']);
+    }, []);
+    editBtn.appendChild(editBtnIcon);
 
     const deleteBtn = DOM.create('button', {
       className: 'icon-btn delete-btn',
       style: 'display: none;'
-    }, ['×']);
+    });
 
     // 添加事件监听器而不是使用onclick属性
     DOM.on(editBtn, 'click', (e) => {
@@ -458,8 +491,8 @@ class AppRenderer {
     this.editMode = true;
     document.body.classList.add('edit-mode');
 
-    // 显示编辑按钮
-    DOM.findAll('.icon-btn').forEach(btn => {
+    // 显示删除按钮（编辑按钮由CSS控制悬浮时显示）
+    DOM.findAll('.delete-btn').forEach(btn => {
       btn.style.display = 'flex';
     });
 
@@ -478,11 +511,10 @@ class AppRenderer {
 
     // 更新按钮状态
     const toggleBtn = DOM.find('#edit-toggle-btn');
-    const editIcon = DOM.find('.edit-icon');
     const editText = DOM.find('.edit-text');
-    if (toggleBtn && editIcon && editText) {
+    if (toggleBtn && editText) {
       toggleBtn.classList.add('editing');
-      editIcon.textContent = '✓';
+      toggleBtn.setAttribute('aria-pressed', 'true');  // ✅ 更新 ARIA 状态
       editText.textContent = '完成';
     }
 
@@ -513,11 +545,10 @@ class AppRenderer {
 
     // 更新按钮状态
     const toggleBtn = DOM.find('#edit-toggle-btn');
-    const editIcon = DOM.find('.edit-icon');
     const editText = DOM.find('.edit-text');
-    if (toggleBtn && editIcon && editText) {
+    if (toggleBtn && editText) {
       toggleBtn.classList.remove('editing');
-      editIcon.textContent = '✏️';
+      toggleBtn.setAttribute('aria-pressed', 'false');  // ✅ 更新 ARIA 状态
       editText.textContent = '编辑';
     }
   }
