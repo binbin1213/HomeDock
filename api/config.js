@@ -74,8 +74,8 @@ export default async function handler(req, res) {
       if (config) {
         return res.status(200).json(config);
       }
-      // 无配置时返回默认配置（不保存，让前端决定是否回写）
-      return res.status(200).json(defaultConfig);
+      // 无配置时返回 null，让前端回退到 apps-config.json
+      return res.status(200).json(null);
     }
 
     // POST/PUT: 保存配置
