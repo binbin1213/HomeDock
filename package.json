@@ -30,18 +30,17 @@
   "author": "binbin1213",
   "license": "MIT",
   "dependencies": {
+    "@vercel/edge-config": "^1.4.3",
     "@vercel/kv": "^3.0.0"
   },
   "devDependencies": {
-    "postcss": "^8.4.35",
-    "postcss-cli": "^11.0.0",
+    "chokidar-cli": "^3.0.0",
     "cssnano": "^6.0.3",
     "esbuild": "^0.19.11",
-    "chokidar-cli": "^3.0.0"
+    "postcss": "^8.4.35",
+    "postcss-cli": "^11.0.0"
   },
   "engines": {
     "node": ">=18"
   }
 }
-
-

@@ -2,10 +2,12 @@
  * Vercel API Route: /api/config
  * 用于读取和保存 HomeDock 的应用配置
  *
- * 依赖: @vercel/kv (Vercel KV 存储)
+ * 使用 Vercel Edge Config 存储配置
  */
 
-import { kv } from '@vercel/kv';
+import { readFileSync } from 'fs';
+import { join } from 'path';
+import { get, getAll } from '@vercel/edge-config';
 
 // 默认配置模板
 const defaultConfig = {
@@ -28,32 +30,60 @@ const defaultConfig = {
 };
 
 /**
- * 从 KV 读取配置
+ * 从 Edge Config 读取配置
  */
-async function getConfig() {
+async function getConfigFromEdge() {
   try {
-    const config = await kv.get('homedock-config');
-    if (config) {
-      return typeof config === 'string' ? JSON.parse(config) : config;
-    }
-    return null;
+    const config = await get('homedock-config');
+    return config;
   } catch (error) {
-    console.error('Failed to get config from KV:', error);
+    console.log('Edge Config not ready or missing:', error.message);
     return null;
   }
 }
 
 /**
- * 保存配置到 KV
+ * 从本地文件读取配置
+ */
+function getConfigFromFile() {
+  try {
+    const configPath = join(process.cwd(), 'apps-config.json');
+    const configContent = readFileSync(configPath, 'utf-8');
+    return JSON.parse(configContent);
+  } catch (error) {
+    console.error('Failed to read config file:', error);
+    return null;
+  }
+}
+
+/**
+ * 读取配置（优先 Edge Config，回退到文件）
+ */
+async function getConfig() {
+  // 先尝试从 Edge Config 读取
+  const edgeConfig = await getConfigFromEdge();
+  if (edgeConfig) {
+    return edgeConfig;
+  }
+
+  // 回退到本地文件
+  const fileConfig = getConfigFromFile();
+  if (fileConfig) {
+    return fileConfig;
+  }
+
+  // 最后回退到默认配置
+  return defaultConfig;
+}
+
+/**
+ * 保存配置（注意：Edge Config 不支持通过 API 动态写入）
+ * 返回 false 表示不支持保存
  */
 async function saveConfig(config) {
-  try {
-    await kv.set('homedock-config', JSON.stringify(config));
-    return true;
-  } catch (error) {
-    console.error('Failed to save config to KV:', error);
-    return false;
-  }
+  // Edge Config 需要在 Dashboard 手动更新
+  // 返回 false，让前端知道无法保存
+  return false;
 }
 
 export default async function handler(req, res) {
@@ -71,11 +101,7 @@ export default async function handler(req, res) {
     // GET: 读取配置
     if (req.method === 'GET') {
       const config = await getConfig();
-      if (config) {
-        return res.status(200).json(config);
-      }
-      // 无配置时返回 null，让前端回退到 apps-config.json
-      return res.status(200).json(null);
+      return res.status(200).json(config);
     }
 
     // POST/PUT: 保存配置
@@ -93,25 +119,21 @@ export default async function handler(req, res) {
       }
 
       const success = await saveConfig(config);
-      if (success) {
-        return res.status(200).json({ status: 'success', message: 'Config saved' });
+      if (!success) {
+        return res.status(501).json({
+          error: 'Saving config via API is not supported',
+          message: '请使用本地文件编辑方式修改配置',
+          hint: '编辑 apps-config.json 文件后重新部署'
+        });
       }
-      return res.status(500).json({ error: 'Failed to save config' });
-    }
 
-    // DELETE: 删除配置（恢复默认值）
-    if (req.method === 'DELETE') {
-      const success = await saveConfig(defaultConfig);
-      if (success) {
-        return res.status(200).json({ status: 'success', message: 'Config reset to default' });
-      }
-      return res.status(500).json({ error: 'Failed to reset config' });
+      return res.status(200).json({ status: 'success', message: 'Config saved' });
     }
 
     // 其他方法不支持
     return res.status(405).json({ error: 'Method not allowed' });
   } catch (error) {
     console.error('API Error:', error);
-    return res.status(500).json({ error: 'Internal server error' });
+    return res.status(500).json({ error: 'Internal server error', details: error.message });
   }
 }
